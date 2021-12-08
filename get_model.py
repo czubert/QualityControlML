@@ -3,7 +3,7 @@ Application responsible for training estimators based on data available
 """
 import time
 from datetime import datetime
-from files_preparation import getting_names, reading_data, grouping_data
+from files_preparation import getting_names, reading_data, grouping_data, rating_spectra
 
 now = datetime.now()
 
@@ -23,7 +23,7 @@ GETTING FILE NAMES FOR FURTHER USE
 
 print('Getting filenames...')
 
-file_names = getting_names.get_names(read_from_file=False)
+file_names = getting_names.get_names(read_from_file=True)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -62,6 +62,25 @@ One DataFrame per one Spectra Type
 start_time = time.time()
 print('Grouping data...')
 grouped_files = grouping_data.group_data(read_files, read_from_file=False)
+
+
+print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+print()
+
+
+"""
+********************************************************************************
+Grouping Data
+--------------------------------------------------------------------------------
+Creating a DataFrame concatenated from all single spectra DataFrames
+from each type of spectra (ag, au, ag_bg, au_bg)
+One DataFrame per one Spectra Type
+********************************************************************************
+"""
+
+start_time = time.time()
+print('Rating spectra...')
+rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
 
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')

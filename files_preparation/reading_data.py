@@ -8,6 +8,8 @@ import utils
 dir_path = 'data_output/step_1_reading_data'
 file_name = 'read_files'
 
+dark = 'Dark Subtracted #1'
+
 
 def main(file_names):
     """
@@ -27,8 +29,13 @@ def main(file_names):
             if isinstance(name, str):
                 path_split = os.path.split(name)
                 
+                #TODO koniecznie poprawić tutaj ten regex, jak nie tu, to przy przypisywaniu "id"
                 prefix = re.search(r'20.{8}',path_split[0]).group(0)
-                main_name = re.search(r'.*',path_split[1]).group(0)[0:-4]
+                main_name = re.search(r'.*',path_split[1]).group(0)
+                
+                # Getting rid of automatically saved spectra of the background
+                if 'sp_0' in main_name:
+                    continue
                 
                 tmp_file_name = prefix + ' ' + main_name
             else:
@@ -44,19 +51,22 @@ def main(file_names):
             if data_df is None:
                 continue
             
+            # Distinguish between two types of spectra names
             if len(main_name) > 10:
-                data_df.loc['id'] = tmp_file_name[0:7] + "_" + tmp_file_name[-1:]
-                data_df.rename(columns={'Dark Subtracted #1': main_name}, inplace=True)
+                id_name = main_name.split('_')
+                id_name[1].lstrip('0')
+    
+                id_name = '_'.join(id_name[0:2])
+                data_df.loc['id'] = id_name
+    
+                data_df.rename(columns={dark: main_name}, inplace=True)
             else:
                 data_df.loc['id'] = tmp_file_name
-                data_df.rename(columns={'Dark Subtracted #1': tmp_file_name}, inplace=True)
+                data_df.rename(columns={dark: tmp_file_name}, inplace=True)
     
     
             # data_df.rename(columns={'Dark Subtracted #1': main_name}, inplace=True)
-            
-            
-            # dropping rows with NaN so after grouping there are less problems with NaNs
-            # data_df.dropna(how="any",inplace=True, axis=0)
+
             
             # creates list of tuples containing 2 elements metadata and data
             data.append((meta_df, data_df))
@@ -74,7 +84,7 @@ def read_spectrum(filepath):
     :return: DataFrame
     """
     read_params = {'sep': ';', 'skiprows': lambda x: x < 79 or x > 1500, 'decimal': ',',
-                   'usecols': ['Raman Shift', 'Dark Subtracted #1'],
+                   'usecols': ['Raman Shift', dark],
                    'skipinitialspace': True, 'encoding': "utf-8", 'na_filter': True}
     
     data_df = pd.read_csv(filepath, **read_params)
