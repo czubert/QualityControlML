@@ -80,7 +80,7 @@ One DataFrame per one Spectra Type
 
 start_time = time.time()
 print('Rating spectra...')
-rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
+rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
 
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
