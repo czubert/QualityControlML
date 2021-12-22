@@ -4,6 +4,7 @@ Application responsible for training estimators based on data available
 import time
 from datetime import datetime
 from files_preparation import getting_names, reading_data, grouping_data, rating_spectra
+from ML import train_test_split, estimators
 
 now = datetime.now()
 
@@ -82,6 +83,52 @@ start_time = time.time()
 print('Rating spectra...')
 rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
 
+
+print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+print()
+
+"""
+********************************************************************************
+Train Test Split
+--------------------------------------------------------------------------------
+Train Test Split background data
+********************************************************************************
+"""
+
+start_time = time.time()
+print('Train Test Splitting the data...')
+train_test_data = train_test_split.splitting_data(rated_spectra, read_from_file=True)
+
+
+print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+print()
+
+
+"""
+********************************************************************************
+Looking for best estimator
+--------------------------------------------------------------------------------
+Checking many estimators, with different parameters
+********************************************************************************
+"""
+start_time = time.time()
+print('Looking for best estimator... be patient...')
+
+for key in train_test_data.keys():
+    print(f'Getting best model for {key}')
+    X_train, X_test, y_train, y_test, X_val, y_val = train_test_data[key]
+
+
+    ml_variables = {
+        'X_train': X_train,
+        'X_val': X_val,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_val': y_val,
+        'y_test': y_test,
+    }
+    
+    train_test_data = estimators.get_best_classsifier(**ml_variables)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
