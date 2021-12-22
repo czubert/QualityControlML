@@ -23,7 +23,7 @@ GETTING FILE NAMES FOR FURTHER USE
 
 print('Getting filenames...')
 
-file_names = getting_names.get_names(read_from_file=True)
+file_names = getting_names.get_names(read_from_file=False)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -42,7 +42,7 @@ start_time = time.time()
 print('Reading files into DataFrames...')
 
 # Getting files as a dict of tuples with metadata and data, keys are types of spectra (ag, au, ag_bg, au_bg
-read_files = reading_data.read_data(file_names, read_from_file=False)
+read_files = reading_data.read_data(file_names, read_from_file=True)
 
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
@@ -61,7 +61,7 @@ One DataFrame per one Spectra Type
 
 start_time = time.time()
 print('Grouping data...')
-grouped_files = grouping_data.group_data(read_files, read_from_file=False)
+grouped_files = grouping_data.group_data(read_files, read_from_file=True)
 
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
@@ -70,11 +70,11 @@ print()
 
 """
 ********************************************************************************
-Grouping Data
+Rating Peaks
 --------------------------------------------------------------------------------
-Creating a DataFrame concatenated from all single spectra DataFrames
-from each type of spectra (ag, au, ag_bg, au_bg)
-One DataFrame per one Spectra Type
+Rating each spectra. Creating DataFrame with all relevant data for rating.
+Creating a DataFrame with only 'id' and 'Quality' features
+Adding 'Quality' feature to background spectra based on 'id'
 ********************************************************************************
 """
 

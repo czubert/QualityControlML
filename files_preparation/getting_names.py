@@ -49,8 +49,8 @@ def lower_names(file_names):
     :return: List
     """
     
-    file_names_lower = [x.lower() for x in file_names]
-    return file_names_lower
+    return [x.lower() for x in file_names]
+    
 
 
 def separate_by_type_names(files_names_lower):

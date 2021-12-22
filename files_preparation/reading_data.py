@@ -31,8 +31,7 @@ def main(file_names):
                 
                 #TODO koniecznie poprawić tutaj ten regex, jak nie tu, to przy przypisywaniu "id"
                 prefix = re.search(r'20.{8}',path_split[0]).group(0)
-                main_name = re.search(r'.*',path_split[1]).group(0)
-                
+                main_name = re.search(r'.*',path_split[1]).group(0)[:-4] # getting filenames and deleting '.txt'
                 # Getting rid of automatically saved spectra of the background
                 if 'sp_0' in main_name:
                     continue
