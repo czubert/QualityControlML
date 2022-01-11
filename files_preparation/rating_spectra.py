@@ -26,7 +26,9 @@ peaks = {
     'peak3': ['970', '1031'],
     'peak4': ['1530', '1641'],
 }
+
 quality_peak_names = ['Quality-peak1', 'Quality-peak2', 'Quality-peak3', 'Quality-peak4']
+
 LP = 'laser_power'
 IT = 'integration_time'
 FN = 'File_name'
@@ -41,6 +43,7 @@ def main(grouped_files, baseline_corr=False):
     :return:
     """
     rated_grouped_files = grouped_files.copy()
+    tmp_dict = {}  # for plots etc. to estimate the limit of the good / bad substrate
     
     for substr_type in ['ag', 'au']:
         # Changing col names type so there is a possibility to use pd.loc
@@ -51,6 +54,10 @@ def main(grouped_files, baseline_corr=False):
         
         # take df with data, and gets peaks values which are then used to rate spectra
         rate_df = get_peak_value(tmp_data_df, rate_df)
+        
+        # for the purpose of checking where should be the limit set
+        tmp_df = rate_df.copy()
+        tmp_dict[substr_type] = tmp_df
         
         # rate spectra basing on peak values
         rate_df = rate_peaks(rate_df)
@@ -64,18 +71,16 @@ def main(grouped_files, baseline_corr=False):
         rated_grouped_files[substr_type + '_marks'] = pd.DataFrame(rate_df, columns=['id', 'Quality'])
         rated_grouped_files[substr_type + '_bg'] = rated_grouped_files[substr_type + '_bg'].join(
             rated_grouped_files[substr_type + '_marks'].set_index('id'), on='id')
-        
+    
     for key in rated_grouped_files.keys():
         rated_grouped_files[key].dropna(inplace=True, how='any', axis=0)
         try:
-            rated_grouped_files[key]['Quality'] =rated_grouped_files[key]['Quality'].astype(np.uint8)
+            rated_grouped_files[key]['Quality'] = rated_grouped_files[key]['Quality'].astype(np.uint8)
         except KeyError:
             continue
-        
-    
     
     utils.save_as_joblib(rated_grouped_files, file_name, dir_path)
-    return rated_grouped_files
+    return rated_grouped_files, tmp_dict
 
 
 def change_col_names_type_to_str(df):
@@ -179,12 +184,12 @@ def rate_new_data_peaks(df):
         
         # For Quality == 1
         df.loc[df.loc[:, peak_name] > quantiles[0.25], quality_name] = 1
-        
-        # For Quality == 2
-        df.loc[df.loc[:, peak_name] >= quantiles[0.50], quality_name] = 2
-        
-        # For Quality == 3
-        df.loc[df.loc[:, peak_name] > quantiles[0.75], quality_name] = 3
+        #
+        # # For Quality == 2
+        # df.loc[df.loc[:, peak_name] >= quantiles[0.50], quality_name] = 2
+        #
+        # # For Quality == 3
+        # df.loc[df.loc[:, peak_name] > quantiles[0.75], quality_name] = 3
     
     # TODO max median mean wrzucic jako parametry funkcji, zeby latwo bylo to zmienic
     # important returns statistics of peak (max, median, mean)
@@ -206,4 +211,4 @@ if __name__ == '__main__':
     dir_path = 'data_output/step_2_group_data'
     file_name = 'grouped_data'
     grouped_files = utils.read_joblib(file_name, '../' + dir_path)
-    rated_spectra = main(grouped_files)
+    rated_spectra, tmp_dict = main(grouped_files)

@@ -49,3 +49,10 @@ def group_data(read_files, read_from_file=True):
         return grouped_files
     else:
         return main(read_files)
+
+
+if __name__ == '__main__':
+    dir_path = 'data_output/step_1_reading_data'
+    file_name = 'read_files'
+    read_files = utils.read_joblib(file_name, '../' + dir_path)
+    grouped_spectra = main(read_files)
