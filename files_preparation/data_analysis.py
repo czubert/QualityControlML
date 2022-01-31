@@ -29,9 +29,10 @@ def run(rated_spectra):
 
     # line plots
     # best_line = px.line(best)
-    ratio_above_median = plot_ratio_above_median(ratio_df, rated_spectra)
+    # ratio_above_median = plot_ratio_above_median(ratio_df, rated_spectra)
 
-    return ratio_df, abs_df, best, worst, ratio_above_median
+    # return ratio_df, abs_df, best, worst, ratio_above_median
+    return ratio_df, abs_df, best, worst  # , ratio_above_median
 
 def plot_ratio(new_spectra_df):
     """
@@ -44,8 +45,8 @@ def plot_ratio(new_spectra_df):
         ratio_df.loc[:, name] = new_spectra_df.loc[:, values[0]:values[1]].max(axis=1) \
                                 / new_spectra_df.loc[:, values[0]:values[1]].min(axis=1)
     
-    # fig = px.violin(ratio_df, y=peaks, title='Ratio')
-    # fig.show('browser')
+    fig = px.violin(ratio_df, y=peaks, title='Ratio')
+    fig.show('browser')
     
     return ratio_df
 
@@ -62,8 +63,8 @@ def plot_absolute(new_spectra_df):
                                 - new_spectra_df.loc[:, values[0]:values[1]].min(axis=1)
 
 
-    # fig = px.violin(abs_df, y=peaks, title='Absolut Values')
-    # fig.show('browser')
+    fig = px.violin(abs_df, y=peaks, title='Absolut Values')
+    fig.show('browser')
     
     return abs_df
 
@@ -86,11 +87,11 @@ def plot_best_worst_ratio(new_spectra_df):
     # Getting worst ratio for each peak for each substrate
     worst = ratio_df.groupby('id').min()
     
-    # fig = px.violin(best, y=peaks, title="Best ratio")
-    # fig.show('browser')
-    #
-    # fig2 = px.violin(worst, y=peaks, title="Worst ratio")
-    # fig2.show('browser')
+    fig = px.violin(best, y=peaks, title="Best ratio")
+    fig.show('browser')
+
+    fig2 = px.violin(worst, y=peaks, title="Worst ratio")
+    fig2.show('browser')
     
     return best, worst
 
@@ -122,5 +123,5 @@ if __name__ == "__main__":
     dir_path = 'data_output/step_3_rate_data'
     file_name = 'rated_data'
     rated_spectra = utils.read_joblib(file_name, '../' + dir_path)
-    ratio_df, abs_df, best, worst, ratio_above_median = run(rated_spectra)
-    
+    # ratio_df, abs_df, best, worst, ratio_above_median = run(rated_spectra)
+    ratio_df, abs_df, best, worst = run(rated_spectra)

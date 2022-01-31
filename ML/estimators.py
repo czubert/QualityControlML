@@ -52,42 +52,42 @@ classifiers = {
                     'decomposition__n_components': [100],  # [5,10,50,100,200]  best: 100
                 }},
     
-    'SVC':
-        {
-            'name': 'SVC',
-            'estimator': SVC(),
-            'selector': SelectKBest(),
-            'decomposition': None,  # None because PCA() lowers the scores
-            'params':
-                {
-                    "classifier__C": [0.01, 0.1, 1, 2],  # [0.01, 0.1, 1, 2]  best: 2
-                    "classifier__kernel": ['rbf','poly','linear'],  # ['rbf','poly','linear']  best: 'rbf'
-                    "classifier__degree": [1,3,5],  # [1,3,5]  best: 1
-                    "classifier__max_iter": [-1, 300],  # [-1, 1, 10, 100, 1000]  best: -1
-                    "classifier__gamma": ['auto'],  # []  best: 'auto'
-                    "classifier__tol": [0.001, 0.01 ,1],  # [0.001, 0.01,0.1 ,1]  best: 0.1
-                    "classifier__probability": [True],  # [True, False]  best: True
-                    'selector__k': [90],  # [30, 50, 90, 100, 150, 200]  best: 90
-                }},
-    
-    'RandomForestClassifier':
-        {
-            'name': 'RandomForestClassifier',
-            'estimator': RandomForestClassifier(),
-            'selector': SelectKBest(),
-            'decomposition': None,
-            'params':
-                {
-                    'classifier__n_estimators': [100, 200],  # [list(range(100, 900, 200))]  best: 300
-                    'classifier__criterion': ['gini'],  # ['gini']  best:'gini'
-                    'classifier__max_features': [0.3, 0.5, 0.7],  # [0.3, 0.5, 0.7]  best: 0.5
-                    'classifier__max_depth': [1,10,100],  # [1,10,100]  best: 100
-                    'classifier__max_leaf_nodes': [50, 150, 250],  # [50, 150, 250]  best: 250
-                    'classifier__min_samples_split': [0.1, 0.5, 0.09],  # [1, 5, 10]  best: 5
-                    'classifier__bootstrap': [True],  # [True, False]  best: True
-                    'classifier__max_samples': [50, 150, 250],  # [50, 150, 250]  best: 250
-                    'selector__k': [50,400,600],  # [50,100,120,130,150,200]  best: 100
-                }},
+    # 'SVC':
+    #     {
+    #         'name': 'SVC',
+    #         'estimator': SVC(),
+    #         'selector': SelectKBest(),
+    #         'decomposition': None,  # None because PCA() lowers the scores
+    #         'params':
+    #             {
+    #                 "classifier__C": [0.01, 0.1, 1, 2],  # [0.01, 0.1, 1, 2]  best: 2
+    #                 "classifier__kernel": ['rbf','poly','linear'],  # ['rbf','poly','linear']  best: 'rbf'
+    #                 "classifier__degree": [1,3,5],  # [1,3,5]  best: 1
+    #                 "classifier__max_iter": [-1, 300],  # [-1, 1, 10, 100, 1000]  best: -1
+    #                 "classifier__gamma": ['auto'],  # []  best: 'auto'
+    #                 "classifier__tol": [0.001, 0.01 ,1],  # [0.001, 0.01,0.1 ,1]  best: 0.1
+    #                 "classifier__probability": [True],  # [True, False]  best: True
+    #                 'selector__k': [90],  # [30, 50, 90, 100, 150, 200]  best: 90
+    #             }},
+    #
+    # 'RandomForestClassifier':
+    #     {
+    #         'name': 'RandomForestClassifier',
+    #         'estimator': RandomForestClassifier(),
+    #         'selector': SelectKBest(),
+    #         'decomposition': None,
+    #         'params':
+    #             {
+    #                 'classifier__n_estimators': [100, 200],  # [list(range(100, 900, 200))]  best: 300
+    #                 'classifier__criterion': ['gini'],  # ['gini']  best:'gini'
+    #                 'classifier__max_features': [0.3, 0.5, 0.7],  # [0.3, 0.5, 0.7]  best: 0.5
+    #                 'classifier__max_depth': [1,10,100],  # [1,10,100]  best: 100
+    #                 'classifier__max_leaf_nodes': [50, 150, 250],  # [50, 150, 250]  best: 250
+    #                 'classifier__min_samples_split': [0.1, 0.5, 0.09],  # [1, 5, 10]  best: 5
+    #                 'classifier__bootstrap': [True],  # [True, False]  best: True
+    #                 'classifier__max_samples': [50, 150, 250],  # [50, 150, 250]  best: 250
+    #                 'selector__k': [50,400,600],  # [50,100,120,130,150,200]  best: 100
+    #             }},
 }
 
 kfold = StratifiedKFold(n_splits=5, random_state=SEED, shuffle=True)
@@ -111,8 +111,8 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
 
     for key, value in classifiers.items():
         tmp_pipe = Pipeline([
-            ('scaler', StandardScaler(with_mean=False)),
-            ('sampling', RandomUnderSampler(random_state=40)),
+            # ('scaler', StandardScaler(with_mean=False)),
+            # ('sampling', RandomUnderSampler(random_state=40)),
             ('selector', value['selector']),
             ('decomposition', value['decomposition']),
             ('classifier', value['estimator']),

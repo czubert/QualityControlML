@@ -4,8 +4,12 @@ from sklearn.model_selection import train_test_split
 import utils
 
 # Output paths
-dir_path = 'data_output/step_4_train_test_split_data'
-file_name = 'train_test_split_data'
+dir_path_out = 'data_output/step_4_train_test_split_data'
+file_name_out = 'train_test_split_data'
+
+# Input paths
+dir_path_in = 'data_output/step_3_rate_data'
+file_name_in = 'rated_data'
 
 
 SUBSTRATE_TYPES = ['ag_bg']
@@ -48,10 +52,10 @@ def main(rated_spectra):
 
 def splitting_data(rated_spectra,read_from_file=True):
     if read_from_file:
-        if not os.path.isfile(dir_path + '//' + file_name + '.joblib'):
+        if not os.path.isfile(dir_path_in + '//' + file_name_in + '.joblib'):
             return main(rated_spectra)
         else:
-            return utils.read_joblib(file_name, dir_path)
+            return utils.read_joblib(file_name_in, dir_path_in)
     
     else:
         return main(rated_spectra)
