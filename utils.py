@@ -23,3 +23,10 @@ def save_as_csv(data, file_name, dir_name):
 
 def read_csv(file_name, dir_name):
     return pd.read_csv(f'{dir_name}/{file_name}.csv')
+
+
+def change_col_names_type_to_str(df):
+    df.copy()
+    cols = [str(x) for x in df.columns]
+    df.columns = cols
+    return df

@@ -4,6 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/data_input" />
       <excludeFolder url="file://$MODULE_DIR$/data_output" />
+      <excludeFolder url="file://$MODULE_DIR$/data_output_chasz" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

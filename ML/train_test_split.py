@@ -26,8 +26,8 @@ def main(rated_spectra):
     split_data = {}
     for substrate_type in SUBSTRATE_TYPES:
         rated_spectra[substrate_type].round()
-        X = rated_spectra[substrate_type].iloc[:, 1:-4]
-        y = rated_spectra[substrate_type].loc[:, 'Quality']
+        X = rated_spectra.iloc[:, 1:-4]
+        y = rated_spectra.loc[:, 'y']
 
         #
         # # Train, Test, Validation Split
@@ -44,6 +44,9 @@ def main(rated_spectra):
 
         split_data[substrate_type] = X_train, X_test, y_train, y_test, X_val, y_val
         
+        
+    utils.save_as_joblib(split_data, file_name_out, dir_path_out)
+    
     return split_data
 
 
@@ -52,7 +55,7 @@ def main(rated_spectra):
 
 def splitting_data(rated_spectra,read_from_file=True):
     if read_from_file:
-        if not os.path.isfile(dir_path_in + '//' + file_name_in + '.joblib'):
+        if not os.path.isfile(dir_path_out + '//' + file_name_out + '.joblib'):
             return main(rated_spectra)
         else:
             return utils.read_joblib(file_name_in, dir_path_in)

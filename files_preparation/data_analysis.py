@@ -19,7 +19,7 @@ from plotly.offline import plot
 def run(rated_spectra):
     # Getting relevant data
     spectra_df = rated_spectra['ag'] # Takes only ag spectra
-    mask = spectra_df['id'].str.startswith('s')  # mast to get only new spectra
+    mask = spectra_df['id'].str.startswith('s')  # mask to get only new spectra
     new_spectra_df = spectra_df[~mask] # Takes only new spectra out of all ag spectra
 
     # violin plots
@@ -27,9 +27,6 @@ def run(rated_spectra):
     abs_df = plot_absolute(new_spectra_df)
     best, worst = plot_best_worst_ratio(new_spectra_df)
 
-    # line plots
-    # best_line = px.line(best)
-    # ratio_above_median = plot_ratio_above_median(ratio_df, rated_spectra)
 
     # return ratio_df, abs_df, best, worst, ratio_above_median
     return ratio_df, abs_df, best, worst  # , ratio_above_median
@@ -45,8 +42,8 @@ def plot_ratio(new_spectra_df):
         ratio_df.loc[:, name] = new_spectra_df.loc[:, values[0]:values[1]].max(axis=1) \
                                 / new_spectra_df.loc[:, values[0]:values[1]].min(axis=1)
     
-    fig = px.violin(ratio_df, y=peaks, title='Ratio')
-    fig.show('browser')
+    # fig = px.violin(ratio_df, y=peaks, title='Ratio')
+    # fig.show('browser')
     
     return ratio_df
 
@@ -63,8 +60,8 @@ def plot_absolute(new_spectra_df):
                                 - new_spectra_df.loc[:, values[0]:values[1]].min(axis=1)
 
 
-    fig = px.violin(abs_df, y=peaks, title='Absolut Values')
-    fig.show('browser')
+    # fig = px.violin(abs_df, y=peaks, title='Absolut Values')
+    # fig.show('browser')
     
     return abs_df
 
@@ -87,11 +84,11 @@ def plot_best_worst_ratio(new_spectra_df):
     # Getting worst ratio for each peak for each substrate
     worst = ratio_df.groupby('id').min()
     
-    fig = px.violin(best, y=peaks, title="Best ratio")
-    fig.show('browser')
-
-    fig2 = px.violin(worst, y=peaks, title="Worst ratio")
-    fig2.show('browser')
+    # fig = px.violin(best, y=peaks, title="Best ratio")
+    # fig.show('browser')
+    #
+    # fig2 = px.violin(worst, y=peaks, title="Worst ratio")
+    # fig2.show('browser')
     
     return best, worst
 
@@ -113,10 +110,10 @@ def plot_ratio_above_median(ratio_df, rated_spectra):
     print(above_median_to_plot)
     
     
-    figu = px.line(above_median_to_plot, x=above_median_to_plot.columns, y=above_median_to_plot.values[0])
+    # figu = px.line(above_median_to_plot, x=above_median_to_plot.columns, y=above_median_to_plot.values[0])
     # figu = px.line(above_median_to_plot)
 
-    figu.show('browser')
+    # figu.show('browser')
     return above_median_to_plot
 
 if __name__ == "__main__":

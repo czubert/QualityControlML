@@ -8,4 +8,3 @@ def pattern_in_name(name, re_pattern):
     elif re.search(re_pattern, name) is not None:
         return True
 
-

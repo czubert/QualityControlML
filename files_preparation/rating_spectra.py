@@ -5,20 +5,12 @@ import pandas as pd
 
 import utils
 
+
 # Output paths
 dir_path = 'data_output/step_3_rate_data'
 file_name = 'rated_data'
 
 # Constants
-# todo usunąć jak niepotrzebne
-# peaks = {
-#     # beginning of the peak and end of the peak to estimate max and min values
-#     'peak1': ['671.12', '761.54'],
-#     'peak2': ['801.91', '881.67'],
-#     'peak3': ['970.39', '1031.33'],
-#     'peak4': ['1530.47', '1641.35'],
-# }
-
 peaks = {
     # beginning of the peak and end of the peak to estimate max and min values
     'peak1': ['671', '761'],
@@ -47,7 +39,7 @@ def main(grouped_files, baseline_corr=False):
     
     for substr_type in ['ag', 'au']:
         # Changing col names type so there is a possibility to use pd.loc
-        tmp_data_df = change_col_names_type_to_str(rated_grouped_files[substr_type])
+        tmp_data_df = utils.change_col_names_type_to_str(rated_grouped_files[substr_type])
         
         # Creating a dataframe that consists of data relevant to evaluate the quality of SERS substrate
         rate_df = tmp_data_df.loc[:, ['id', 'laser_power', 'integration_time']]
@@ -83,11 +75,7 @@ def main(grouped_files, baseline_corr=False):
     return rated_grouped_files, tmp_dict
 
 
-def change_col_names_type_to_str(df):
-    df.copy()
-    cols = [str(x) for x in df.columns]
-    df.columns = cols
-    return df
+
 
 
 def get_peak_value(tmp_data_df, new_df):
