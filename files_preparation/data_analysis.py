@@ -1,6 +1,6 @@
 import pandas as pd
 import utils
-
+#TODO prawdopodobnie wywalić cały ten moduł
 
 peaks = {
     # beginning of the peak and end of the peak to estimate max and min values
@@ -8,12 +8,11 @@ peaks = {
     'peak2': ['801', '881'],
     'peak3': ['970', '1031'],
 }
-# 'peak4': ['1530', '1641'],
+
 """
 Part responsible for the estimation of the limit which NEW spectra is good and which not
 """
-import plotly.express as px
-from plotly.offline import plot
+
 
 
 def run(rated_spectra):

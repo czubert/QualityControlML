@@ -77,7 +77,9 @@ Creating a DataFrame with only 'id' and 'Quality' features
 Adding 'Quality' feature to background spectra based on 'id'
 ********************************************************************************
 """
-
+# important while uploading new data remember to look at the plots to find the limit where substrates are good and bad
+# TODO napisać moduł do podglądu danych, żeby wybrać granice
+# TODO dodać parametry graniczne dla widm słabych i dobrych i przerwy
 start_time = time.time()
 print('Rating spectra...')
 # rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
@@ -95,6 +97,7 @@ Train Test Split
 Train Test Split background data
 ********************************************************************************
 """
+#TODO odpalić to dla DataFrame, a nie slownika poniżej w kodzie)
 #
 # start_time = time.time()
 # print('Train Test Splitting the data...')
@@ -141,5 +144,5 @@ ml_variables = {
 
 scores, models = estimators.get_best_classsifier(**ml_variables)
 
-print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+print(f'Models trained in {round(time.time() - start_time, 2)} seconds')
 print()
