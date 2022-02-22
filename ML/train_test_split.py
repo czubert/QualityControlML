@@ -7,19 +7,14 @@ import utils
 dir_path_out = 'data_output/step_4_train_test_split_data'
 file_name_out = 'train_test_split_data'
 
-# Input paths
-dir_path_in = 'data_output/step_3_rate_data'
-file_name_in = 'rated_data'
-
-# Constants
-SUBSTRATE_TYPES = ['ag_bg']
-
 
 def main(rated_spectra, seed):
     """
-    Train test split method used on features and labels
-    :param data_for_ml: dict
-    :return: dict
+    Train test split method used on DataFrame of SERSitive silver substrate
+    background features (X) + the rating of the spectrum (y)
+    :param data_for_ml: DataFrame, that consists of all data and it's labels - "y"
+    :param seed: int, seed number
+    :return: dict, consisting of train, val, test values after train_test_split
     """
     
     X = rated_spectra.iloc[:, :-5]
