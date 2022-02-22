@@ -6,8 +6,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from files_preparation import getting_names, reading_data, grouping_data, rating_spectra, rating_spectra_chasz, \
-    data_analysis
+from files_preparation import getting_names, reading_data, grouping_data, rating_spectra, data_analysis
 from ML import train_test_split, estimators
 
 now = datetime.now()
@@ -83,7 +82,7 @@ Adding 'Quality' feature to background spectra based on 'id'
 start_time = time.time()
 print('Rating spectra...')
 # rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
-rated_spectra = rating_spectra_chasz.rate_spectra(grouped_files, read_from_file=True,
+rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True,
                                                   only_new_spectra=True, baseline_corr=False)
 # data_analysis.run(rated_spectra)
 
@@ -98,13 +97,13 @@ Train Test Split background data
 ********************************************************************************
 """
 #TODO odpalić to dla DataFrame, a nie slownika poniżej w kodzie)
-#
-# start_time = time.time()
-# print('Train Test Splitting the data...')
-# train_test_data = train_test_split.splitting_data(rated_spectra, read_from_file=True)
-#
-# print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
-# print()
+
+start_time = time.time()
+print('Train Test Splitting the data...')
+ml_variables = train_test_split.splitting_data(rated_spectra, read_from_file=False, seed=42)
+
+print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+print()
 
 """
 ********************************************************************************
@@ -116,31 +115,6 @@ Checking many estimators, with different parameters
 start_time = time.time()
 print('Looking for best estimator... be patient...')
 
-# for key in train_test_data.keys():
-#     print(f'Getting best model for {key}')
-X = rated_spectra.iloc[:, :-5]
-y = rated_spectra.loc[:, 'y']
-
-from sklearn.model_selection import train_test_split
-
-X_train, X_test, y_train, y_test = train_test_split(X, y,
-                                                    test_size=0.1,
-                                                    random_state=42,
-                                                    stratify=y)
-
-X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
-                                                  test_size=0.1111,
-                                                  random_state=42,
-                                                  stratify=y_train)
-
-ml_variables = {
-    'X_train': X_train,
-    'X_val': X_val,
-    'X_test': X_test,
-    'y_train': y_train,
-    'y_val': y_val,
-    'y_test': y_test,
-}
 
 scores, models = estimators.get_best_classsifier(**ml_variables)
 
