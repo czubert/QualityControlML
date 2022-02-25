@@ -31,8 +31,6 @@ from xgboost.sklearn import XGBClassifier
 from catboost import CatBoostClassifier
 
 # Output paths
-# dir_path = 'data_output/step_5_ml'
-# file_name = 'scores.csv'
 MODEL_PATH = 'data_output/step_5_ml'
 SCORE_PATH = 'data_output/step_5_ml/scores.csv'
 

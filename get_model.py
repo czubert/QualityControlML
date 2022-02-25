@@ -5,16 +5,30 @@ Where the idea came from
 Application responsible for training estimators based on data available
 Program will be used as the Quality Control of SERSitive substrates based on the spectra.
 There are two types of data you can acquire using SERS substrate:
-- the background of the active surface area
+- The background of the active surface area
 - SERS "fingerprint" of the measured compound, in our case it was 4-paramercaptobenzoic acid (PMBA),
-which we use to find out if our substrates have all the parameters (reproducibility, homogeneity and enhancement)
-at expected rate. This is our Quality Control, which is not the best as:
-- as we need to use at least one substrate from each batch (15 pcs) - cost-prohibitive
+We use PMBA to find out if our substrates have all the parameters (reproducibility, homogeneity and enhancement)
+at expected rate. Our Quality Control is not the the most efficient one as:
+- we need to use at least one substrate from each batch (15 pcs) - cost-prohibitive
 - we measure the background spectra after production process and then we immerse it in PMBA for 20h - time-consuming
 - we estimate the quality of the whole batch basing on 1-2 substrates that were immersed - low accuracy
 We found out that there is a dependence between the background spectra and the quality of the substrates.
 Therefore, the idea of this program was to check if the dependence is true and if we can estimate the quality
 of the substrate from the background spectrum.
+To rate spectra we have took 3 characteristic peaks which values never exceeds the detector of our Raman spectrometer,
+to avoid the 'shifts' of raman spectra, we choose the region where we expect the peaks [first value is the beginning,
+and the second one is the end of the region in which we expect the peak]:
+    'peak1': ['671', '761'],
+    'peak2': ['801', '881'],
+    'peak3': ['970', '1031'],
+Then we count the ratio between the highest and the lowest values in each regions (we also tried the absolut values,
+and the original values, but both didn't work as expected, as ).
+We sort ratios of all spectra (PMBA) that we have collected, and we checked spectrum by spectrum where is the boundary
+between "good" and "bad" spectra. Next we have excluded 10% of spectra closest to the boundary, so it is more clear for
+machine learning algorithms to see the difference in spectra while learning. All spectra that were beneath boundary
+got the "0" rating, and all above "1".
+
+
 ********************************************************************************
 """
 
