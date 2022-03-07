@@ -16,8 +16,7 @@ def main(file_names):
     """
     Returns|saves dict of tuples(metadata, data) consisting of DataFrames of single spectra
     segregated by types of spectra (ag, au, ag_gb, au_bg
-        Additionally it gives corresponding file name as a feature name.
-    :param file_paths_of_one_type: list
+    Additionally it gives corresponding file name as a feature name.
     :return: dict of list of tuples
     """
     files = {}

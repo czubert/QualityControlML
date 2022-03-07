@@ -2,8 +2,8 @@
 ********************************************************************************
 Where the idea came from
 --------------------------------------------------------------------------------
-Application responsible for training estimators based on data available
-Program will be used as the Quality Control of SERSitive substrates based on the spectra.
+Application responsible for training estimators based on data available.
+Program will be used for the Quality Control of SERSitive substrates based on SERS spectra.
 There are two types of data you can acquire using SERS substrate:
 - The background of the active surface area
 - SERS "fingerprint" of the measured compound, in our case it was 4-paramercaptobenzoic acid (PMBA),
@@ -15,23 +15,78 @@ at expected rate. Our Quality Control is not the the most efficient one as:
 We found out that there is a dependence between the background spectra and the quality of the substrates.
 Therefore, the idea of this program was to check if the dependence is true and if we can estimate the quality
 of the substrate from the background spectrum.
+
+------------------------------------
+Preprocessing
+------------------------------------
 To rate spectra we have took 3 characteristic peaks which values never exceeds the detector of our Raman spectrometer,
 to avoid the 'shifts' of raman spectra, we choose the region where we expect the peaks [first value is the beginning,
 and the second one is the end of the region in which we expect the peak]:
     'peak1': ['671', '761'],
     'peak2': ['801', '881'],
     'peak3': ['970', '1031'],
-Then we count the ratio between the highest and the lowest values in each regions (we also tried the absolut values,
-and the original values, but both didn't work as expected, as ).
-We sort ratios of all spectra (PMBA) that we have collected, and we checked spectrum by spectrum where is the boundary
-between "good" and "bad" spectra. Next we have excluded 10% of spectra closest to the boundary, so it is more clear for
-machine learning algorithms to see the difference in spectra while learning. All spectra that were beneath boundary
-got the "0" rating, and all above "1".
+Then we count the ratio between the highest and the lowest values in each regions (we also tried the absolute values,
+and the original values, but both didn't work as expected).
+We sorted the ratios of all PMBA spectra, that we have collected, in ascending order.
+Then we checked plots spectrum by spectrum where is the boundary between "good" and "bad" spectra.
+Next we have excluded 10% of spectra closest to the boundary (beneath and above), so it is more clear for
+machine learning algorithms to see the difference between "good" and "bad" spectra during the learning process.
+All spectra that were beneath boundary got the "0", and all above "1" rating.
+The last step of preprecessing the data was to assign the labels of the PMBA spectra to the background spectra
+by the IDs of the substrate.
 
+------------------------------------
+Train Test Split
+------------------------------------
+First step was splitting data into training, validation and test sets of data.
+
+Training data set is used by the ML algorithm to learn what kind of features (in this case background spectra)
+results in which label (0 or 1). This is the place where the magic of Machine Learning appears.
+Depending on the chosen estimator there are some differences in the way of achieving the best fitted function,
+but the gol is the same - achieving the best score of predicting the class.
+
+Validation data set is used to check the performance of the trained model, as you should not use the training data
+for this purpose, because algorithm already "know" this features and class connected with it.
+Based only on the features of validation data set (that program should don't recognize) model is trying to predict
+the class of the substrate (0 or 1) and after that the predicted and true class values are compared and the
+score is calculated. When we are satisfied with the score on validation dataset, we are trying to predict the class
+basing on the test dataset, to be sure that the score was valid and not a lucky mistake.
+Test dataset should not be "known" by the estimator
+
+------------------------------------
+Preprocessing and Machine Learning
+------------------------------------
+To find the best performance of the Quality Control program, we have combined GridSearchCV and Pipeline modules.
+Pipeline allows you to create a queue for performing actions on data as part of preprocessing.
+GridSearchCV is using cross-validation, to check the performance of all given variables for all specified parameters.
+By using the ability to combine this two modules, we could find the best performing ML model of all.
+Our Pipeline consists of 5 steps to find the best combination of preprocessing the features
+and learning on different estimator parameters (for each step there is a control probe,
+where we don't do any operation on the features and it is described as None.
+Pipeline:
+ - scaler (StandardScaler, MinMaxScaler, None) - scaling features to see if reducing numbers to one range
+   will improve the performance of the model or not
+ - sampling (RandomUnderSampler, RandomOverSampler, None) - in case of imbalanced data,
+   checking if under or over sampling will have an impact on model performance
+ - selector (SelectKBest, None) - selecting specified number (K) of the best features,
+   to see the impact on the model performance compared to using all features (None)
+ - decomposition (PCA, None) - The principal component analysis looks for relationships between
+   features based on variance and groups them on this basis, making the differences more significant.
+   As a result, the estimator may have a better chance of correctly predicting the results
+ - classifier (LogisticRegression, SVC, DecisionTreeClassifier, RandomForestClassifier,
+   XGBClassifier, CatBoostClassifier)
+
+
+------------------------------------
+Parameters of the estimators
+------------------------------------
+
+------------------------------------
+Streamlit - GUI
+------------------------------------
 
 ********************************************************************************
 """
-
 
 import time
 from datetime import datetime
@@ -113,7 +168,7 @@ start_time = time.time()
 print('Rating spectra...')
 # rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
 rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True,
-                                                  only_new_spectra=True, baseline_corr=False)
+                                            only_new_spectra=True, baseline_corr=False)
 # data_analysis.run(rated_spectra)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
@@ -126,7 +181,6 @@ Train Test Split
 Train Test Split background data
 ********************************************************************************
 """
-#TODO odpalić to dla DataFrame, a nie slownika poniżej w kodzie)
 
 start_time = time.time()
 print('Train Test Splitting the data...')
@@ -144,7 +198,6 @@ Checking many estimators, with different parameters
 """
 start_time = time.time()
 print('Looking for best estimator... be patient...')
-
 
 scores, models = estimators.get_best_classsifier(**ml_variables)
 
