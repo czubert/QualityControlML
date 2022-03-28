@@ -9,7 +9,7 @@ import utils
 dir_path = 'data_output/step_1_reading_data'
 file_name = 'read_files'
 
-dark = 'Dark Subtracted #1'
+DARK = 'Dark Subtracted #1'
 
 
 def main(file_names):
@@ -58,10 +58,10 @@ def main(file_names):
                 id_name = '_'.join(id_name[0:2])
                 data_df.loc['id'] = id_name
 
-                data_df.rename(columns={dark: main_name}, inplace=True)
+                data_df.rename(columns={DARK: main_name}, inplace=True)
             else:
                 data_df.loc['id'] = tmp_file_name
-                data_df.rename(columns={dark: tmp_file_name}, inplace=True)
+                data_df.rename(columns={DARK: tmp_file_name}, inplace=True)
 
             # data_df.rename(columns={'Dark Subtracted #1': main_name}, inplace=True)
 
@@ -81,7 +81,7 @@ def read_spectrum(filepath):
     :return: DataFrame
     """
     read_params = {'sep': ';', 'skiprows': lambda x: x < 79 or x > 1500, 'decimal': ',',
-                   'usecols': ['Raman Shift', dark],
+                   'usecols': ['Raman Shift', DARK],
                    'skipinitialspace': True, 'encoding': "utf-8", 'na_filter': True}
 
     data_df = pd.read_csv(filepath, **read_params)
@@ -90,10 +90,9 @@ def read_spectrum(filepath):
 
     data_df = data_df[data_df.iloc[:, 0] > 253]
 
-    # TODO sprawdzić, czy to ma wpływ na wyniki
     data_df = data_df.astype({'Raman Shift': 'int'})
 
-    # Solution for files in which there were no values in th ecolumn "Raman Shift"
+    # Solution for files in which there were no values in the column "Raman Shift"
     if data_df.empty:
         return None
 
@@ -110,6 +109,7 @@ def read_metadata(filepath):
 
     read_params = {'sep': ';', 'skiprows': lambda x: x > 78, 'decimal': ',', 'index_col': 0,
                    'skipinitialspace': True, 'encoding': "utf-8", 'header': None}
+    
     meta_df = pd.read_csv(filepath, **read_params)
 
     return meta_df

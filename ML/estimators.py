@@ -38,61 +38,61 @@ SEED = 123
 
 # The params set below are the params for which I have  received the best ROC-AUC score
 classifiers = {
-    # 'LogisticRegression':
-    #     {
-    #         'name': 'LogisticRegression',
-    #         'estimator': LogisticRegression(),
-    #         'selector': SelectKBest(),
-    #         'decomposition': PCA(),
-    #         'params':
-    #             {
-    #                 "classifier__penalty": ['l1'],  # ['l1','l2', 'elasticnet', 'none'] best: l1
-    #                 "classifier__tol": [0.01],  # [0.00001,0.0001,0.001,0.01, 0.1]  best: 0.01
-    #                 "classifier__C": [9],  # [0.01,0.01,1,10]  best:
-    #                 "classifier__class_weight": ['balanced'],  # ['balanced', None]  best: 'balanced'
-    #                 "classifier__solver": ['saga'],  # []  best: 'saga'
-    #                 "classifier__max_iter": [500],  # [60, 90, 100, 150] best:
-    #                 'selector__k': [600],  # [200, 400, 600]  best:
-    #                 'decomposition__n_components': [100],  # [5,10,50,100,200]  best: 100
-    #             }},
-    
-    # 'SVC':
-    #     {
-    #         'name': 'SVC',
-    #         'estimator': SVC(),
-    #         'selector': SelectKBest(),
-    #         'decomposition': PCA(),  # None because PCA() lowers the scores
-    #         'params':
-    #             {
-    #                 "classifier__C": [0.01, 0.1, 1, 2,4],  # [0.01, 0.1, 1, 2]  best: 2
-    #                 "classifier__kernel": ['rbf'],  # ['rbf','poly','linear']  best: 'rbf'
-    #                 "classifier__degree": [1,2],  # [1,3,5]  best: 1
-    #                 "classifier__max_iter": [-1],  # [-1, 1, 10, 100, 1000]  best: -1
-    #                 "classifier__gamma": ['auto'],  # []  best: 'auto'
-    #                 "classifier__tol": [0.001],  # [0.001, 0.01,0.1 ,1]  best: 0.1
-    #                 "classifier__probability": [True],  # [True, False]  best: True
-    #                 'selector__k': [30],  # [30, 50, 90, 100, 150, 200]  best: 90
-    #             }},
+    'LogisticRegression':
+        {
+            'name': 'LogisticRegression',
+            'estimator': LogisticRegression(),
+            'selector': SelectKBest(),
+            'decomposition': PCA(),
+            'params':
+                {
+                    "classifier__penalty": ['l1'],  # ['l1','l2', 'elasticnet', 'none'] best: l1
+                    "classifier__tol": [0.01],  # [0.00001,0.0001,0.001,0.01, 0.1]  best: 0.01
+                    "classifier__C": [9],  # [0.01,0.01,1,10]  best:
+                    "classifier__class_weight": ['balanced'],  # ['balanced', None]  best: 'balanced'
+                    "classifier__solver": ['saga'],  # []  best: 'saga'
+                    "classifier__max_iter": [500],  # [60, 90, 100, 150] best:
+                    'selector__k': [600],  # [200, 400, 600]  best:
+                    'decomposition__n_components': [100],  # [5,10,50,100,200]  best: 100
+                }},
 
-    # 'RandomForestClassifier':
-    #     {
-    #         'name': 'RandomForestClassifier',
-    #         'estimator': RandomForestClassifier(),
-    #         'selector': SelectKBest(),
-    #         'decomposition': None,
-    #         'params':
-    #             {
-    #                 'classifier__n_estimators': [100, 200],  # [list(range(100, 900, 200))]  best: 300
-    #                 'classifier__criterion': ['gini'],  # ['gini']  best:'gini'
-    #                 'classifier__max_features': [0.3, 0.5, 0.7],  # [0.3, 0.5, 0.7]  best: 0.5
-    #                 'classifier__max_depth': [1,10,100],  # [1,10,100]  best: 100
-    #                 'classifier__max_leaf_nodes': [50, 150, 250],  # [50, 150, 250]  best: 250
-    #                 'classifier__min_samples_split': [0.1, 0.5, 0.09],  # [1, 5, 10]  best: 5
-    #                 'classifier__bootstrap': [True],  # [True, False]  best: True
-    #                 'classifier__max_samples': [50, 150, 250],  # [50, 150, 250]  best: 250
-    #                 'selector__k': [50,400,600],  # [50,100,120,130,150,200]  best: 100
-    #             }},
-    
+    'SVC':
+        {
+            'name': 'SVC',
+            'estimator': SVC(),
+            'selector': SelectKBest(),
+            'decomposition': PCA(),  # None because PCA() lowers the scores
+            'params':
+                {
+                    "classifier__C": [2],  # [0.01, 0.1, 1, 2, 4]  best: 2
+                    "classifier__kernel": ['rbf'],  # ['rbf','poly','linear']  best: 'rbf'
+                    "classifier__degree": [1],  # [1,2,3,5]  best: 1
+                    "classifier__max_iter": [-1],  # [-1, 1, 10, 100, 1000]  best: -1
+                    "classifier__gamma": ['auto'],  # []  best: 'auto'
+                    "classifier__tol": [0.001],  # [0.001, 0.01,0.1 ,1]  best: 0.1
+                    "classifier__probability": [True],  # [True, False]  best: True
+                    'selector__k': [30],  # [30, 50, 90, 100, 150, 200]  best: 90
+                }},
+
+    'RandomForestClassifier':
+        {
+            'name': 'RandomForestClassifier',
+            'estimator': RandomForestClassifier(),
+            'selector': SelectKBest(),
+            'decomposition': PCA(),
+            'params':
+                {
+                    'classifier__n_estimators': [300],  # [list(range(100, 900, 200))]  best: 300
+                    'classifier__criterion': ['gini'],  # ['gini']  best:'gini'
+                    'classifier__max_features': [0.5],  # [0.3, 0.5, 0.7]  best: 0.5
+                    'classifier__max_depth': [100],  # [1,10,100]  best: 100
+                    'classifier__max_leaf_nodes': [250],  # [50, 150, 250]  best: 250
+                    'classifier__min_samples_split': [0.1],  # [0.1, 0.5, 0.09, 1, 5, 10]  best: 5
+                    'classifier__bootstrap': [True],  # [True, False]  best: True
+                    'classifier__max_samples': [250],  # [50, 150, 250]  best: 250
+                    'selector__k': [100],  # [50,100,120,130,150,200, 300, 400, 600]  best: 100
+                }},
+
     'XGBClassifier':
         {
             'name': 'XGBClassifier',
@@ -109,20 +109,20 @@ classifiers = {
                     'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
                 }},
 
-    # 'CatBoostClassifier':
-    #     {
-    #         'name': 'CatBoostClassifier',
-    #         'estimator': CatBoostClassifier(task_type="GPU",
-    #                                         devices='0:2'),
-    #         'selector': SelectKBest(),
-    #         'decomposition': PCA(),  # None because PCA() lowers the scores
-    #         'params':
-    #             {
-    #                 "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
-    #                 "classifier__max_depth": [4],  # [2,4,8]  best: 4
-    #                 "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
-    #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
-    #             }},
+    'CatBoostClassifier':
+        {
+            'name': 'CatBoostClassifier',
+            'estimator': CatBoostClassifier(task_type="GPU",
+                                            devices='0:2'),
+            'selector': SelectKBest(),
+            'decomposition': PCA(),  # None because PCA() lowers the scores
+            'params':
+                {
+                    "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
+                    "classifier__max_depth": [4],  # [2,4,8]  best: 4
+                    "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
+                    'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
+                }},
 }
 
 kfold = StratifiedKFold(n_splits=5, random_state=SEED, shuffle=True)
@@ -178,7 +178,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
     #
     # # Saving scores to file
     #
-    try:  # trying to open file if it exist and add scores to existing ones
+    try:  # trying to open file if it exist and add scores to that file
         saved_scores = pd.read_csv(SCORE_PATH)
         saved_scores.index = scores_index
         scores = pd.concat([saved_scores, scores], axis=1)

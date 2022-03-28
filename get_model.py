@@ -41,6 +41,7 @@ print('Reading files into DataFrames...')
 
 # Getting files as a dict of tuples with metadata and data, keys are types of spectra (ag, au, ag_bg, au_bg
 read_files = reading_data.read_data(file_names, read_from_file=True)
+print(read_files)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
