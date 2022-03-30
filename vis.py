@@ -1,11 +1,7 @@
-import io
 import streamlit as st
-import pandas as pd
-from detect_delimiter import detect
-from bs4 import UnicodeDammit
-from constants import LABELS
+from joblib import load
 from vis_helpers import vis_utils
-from files_preparation import reading_data
+import pandas as pd
 
 RS = 'Raman Shift'
 DARK = 'Dark Subtracted #1'
@@ -18,8 +14,17 @@ if uploaded_files:
     for file in uploaded_files:
         file.seek(0)
     
-    # a = vis_utils.read_metadata_vis(uploaded_files)
-    b = vis_utils.read_spectrum_vis(uploaded_files)
+    spectra = vis_utils.read_spectrum_vis(uploaded_files)
     
-    # st.write(a)
-    st.write(b)
+    model = load(f'data_output/step_5_ml/{"LogisticRegression"}_model.joblib')
+    predicted = model.predict(spectra)
+    
+    result = pd.DataFrame(index=pd.Index(spectra.index, name='my_index'))
+    result['Approved'] = predicted
+    result.columns.name = result.index.name
+    result.index.name = None
+    
+    st.write(result.to_html(), unsafe_allow_html=True)
+    
+    st.write(result.index.name)
+    st.write(result)

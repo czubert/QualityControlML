@@ -31,8 +31,8 @@ from xgboost.sklearn import XGBClassifier
 from catboost import CatBoostClassifier
 
 # Output paths
-MODEL_PATH = 'data_output/step_5_ml'
-SCORE_PATH = 'data_output/step_5_ml/scores.csv'
+MODEL_PATH = 'data_output/step_5_ml/models'
+SCORE_PATH = 'data_output/step_5_ml/scores'
 
 SEED = 123
 
@@ -109,20 +109,20 @@ classifiers = {
                     'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
                 }},
 
-    'CatBoostClassifier':
-        {
-            'name': 'CatBoostClassifier',
-            'estimator': CatBoostClassifier(task_type="GPU",
-                                            devices='0:2'),
-            'selector': SelectKBest(),
-            'decomposition': PCA(),  # None because PCA() lowers the scores
-            'params':
-                {
-                    "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
-                    "classifier__max_depth": [4],  # [2,4,8]  best: 4
-                    "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
-                    'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
-                }},
+    # 'CatBoostClassifier':
+    #     {
+    #         'name': 'CatBoostClassifier',
+    #         'estimator': CatBoostClassifier(task_type="GPU",
+    #                                         devices='0:2'),
+    #         'selector': SelectKBest(),
+    #         'decomposition': PCA(),  # None because PCA() lowers the scores
+    #         'params':
+    #             {
+    #                 "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
+    #                 "classifier__max_depth": [4],  # [2,4,8]  best: 4
+    #                 "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
+    #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
+    #             }},
 }
 
 kfold = StratifiedKFold(n_splits=5, random_state=SEED, shuffle=True)
@@ -178,16 +178,20 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
     #
     # # Saving scores to file
     #
+
+    if not os.path.isdir(SCORE_PATH):
+        os.makedirs(f'{SCORE_PATH}')
+
     try:  # trying to open file if it exist and add scores to that file
-        saved_scores = pd.read_csv(SCORE_PATH)
+        saved_scores = pd.read_csv(f'{SCORE_PATH}/scores.csv')
         saved_scores.index = scores_index
         scores = pd.concat([saved_scores, scores], axis=1)
         scores.index = scores_index
-        scores.to_csv(SCORE_PATH, index=False)
+        scores.to_csv(f'{SCORE_PATH}/scores.csv', index=False)
     except FileNotFoundError:  # if there is no file with scores it is saving new one
         scores.index = scores_index
-        scores.to_csv(SCORE_PATH, index=True)
-
+        scores.to_csv(f'{SCORE_PATH}/scores.csv', index=False)
+        
     return scores, models
 
     
