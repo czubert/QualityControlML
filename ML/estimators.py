@@ -146,7 +146,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
 
     for key, value in classifiers.items():
         tmp_pipe = Pipeline([
-            # ('scaler', StandardScaler(with_mean=False)),  #  not used as it lowers the scores
+
             ('scaler', MinMaxScaler()),  #
             # ('sampling', RandomUnderSampler(random_state=40)),
             ('selector', value['selector']),  # Selecting k best features

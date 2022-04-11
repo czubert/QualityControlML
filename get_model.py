@@ -77,10 +77,11 @@ Adding 'Quality' feature to background spectra based on 'id'
 # TODO dodać parametry graniczne dla widm słabych i dobrych i przerwy
 start_time = time.time()
 print('Rating spectra...')
-# rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True, baseline_corr=False)
-rated_spectra = rating_spectra.rate_spectra(grouped_files, read_from_file=True,
-                                            only_new_spectra=True, baseline_corr=False)
-# data_analysis.run(rated_spectra)
+# data_analysis.run(grouped_files, best_ratio=True, peak='peak2')
+rated_spectra = rating_spectra.rate_spectra(grouped_files,
+                                            border_value=130,
+                                            read_from_file=False,
+                                            only_new_spectra=True)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -95,7 +96,7 @@ Train Test Split background data
 
 start_time = time.time()
 print('Train Test Splitting the data...')
-ml_variables = train_test_split.splitting_data(rated_spectra, read_from_file=True, seed=42)
+ml_variables = train_test_split.splitting_data(rated_spectra, read_from_file=False, seed=42)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()

@@ -50,7 +50,6 @@ def lower_names(file_names):
     """
     
     return [x.lower() for x in file_names]
-    
 
 
 def separate_by_type_names(files_names_lower):
@@ -100,7 +99,7 @@ def separate_by_type_names(files_names_lower):
 
 def get_names(read_from_file=False):
     if read_from_file:
-        if not os.path.isfile(dir_path+'//'+file_path+'.joblib'):
+        if not os.path.isfile(dir_path + '//' + file_path + '.joblib'):
             file_names = main()
         else:
             file_names = utils.read_joblib(file_path, dir_path)
