@@ -63,6 +63,24 @@ grouped_files = grouping_data.group_data(read_files, read_from_file=True)
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
 
+
+"""
+********************************************************************************
+Preparing images for data analysis
+--------------------------------------------------------------------------------
+
+********************************************************************************
+"""
+
+start_time = time.time()
+print('Preparing images for data analysis...')
+
+# data_analysis.run(grouped_files, best_ratio=True, peak='peak2')
+
+print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+print()
+
+
 """
 ********************************************************************************
 Rating Peaks
@@ -77,9 +95,9 @@ Adding 'Quality' feature to background spectra based on 'id'
 # TODO dodać parametry graniczne dla widm słabych i dobrych i przerwy
 start_time = time.time()
 print('Rating spectra...')
-# data_analysis.run(grouped_files, best_ratio=True, peak='peak2')
 rated_spectra = rating_spectra.rate_spectra(grouped_files,
-                                            border_value=130,
+                                            border_value=160,
+                                            margin_of_error=0.15,
                                             read_from_file=False,
                                             only_new_spectra=True)
 

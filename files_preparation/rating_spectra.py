@@ -17,7 +17,7 @@ output_dir_path = 'data_output/step_3_rate_data'
 output_file_name = 'rated_data'
 
 
-def main(grouped_files, border_value, only_new_spectra=True):
+def main(grouped_files, border_value, margin_of_error, only_new_spectra=True):
     # Getting relevant data
     ag_df = grouped_files['ag']  # Takes only ag spectra
     
@@ -46,8 +46,8 @@ def main(grouped_files, border_value, only_new_spectra=True):
     to see the differences between low and high spectra.
     """
     # Making the difference between good and low (1/0) spectra more significant
-    low_value = int(border_value - (border_value * 0.2))
-    high_value = int(border_value + (border_value * 0.2))
+    low_value = int(border_value - (border_value * margin_of_error))
+    high_value = int(border_value + (border_value * margin_of_error))
     
     low = set(best.reset_index().sort_values('peak1')['id'].iloc[:low_value])
     high = set(best.reset_index().sort_values('peak1')['id'].iloc[high_value:])
@@ -71,20 +71,20 @@ def main(grouped_files, border_value, only_new_spectra=True):
     return df_wybrane
 
 
-def rate_spectra(grouped_files, border_value, read_from_file=True, only_new_spectra=True):
+def rate_spectra(grouped_files, border_value, margin_of_error, read_from_file=True, only_new_spectra=True):
     if read_from_file:
         if not os.path.isfile(output_dir_path + '//' + output_file_name + '.joblib'):
-            return main(grouped_files, border_value, only_new_spectra)
+            return main(grouped_files, border_value, margin_of_error, only_new_spectra)
         else:
             return utils.read_joblib(output_file_name, output_dir_path)
     
     else:
-        return main(grouped_files, border_value, only_new_spectra)
+        return main(grouped_files, border_value, margin_of_error, only_new_spectra)
 
 
 if __name__ == "__main__":
     grouped_files = utils.read_joblib(file_name, '../' + dir_path)
     
-    df_wybrane = main(grouped_files, border_value=130)
+    df_wybrane = main(grouped_files, border_value=130, margin_of_error=0.2)
     
     print('done')

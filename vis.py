@@ -22,16 +22,20 @@ if uploaded_files:
     
     spectra = vis_utils.read_spectrum_vis(uploaded_files)
     
+    st.write(spectra)
+    
     result = pd.DataFrame(index=pd.Index(spectra.index, name='File name'))
     
     for trained_model_name in trained_models_names:
         trained_model_name = trained_model_name.split('\\')[1]
         trained_model_short_name = trained_model_name.replace('Classifier', '')
         trained_model_short_name = trained_model_short_name.replace('LogisticRegression', 'LR*')
-        trained_model = load(f'data_output/step_5_ml/models/{trained_model_name}')
-        predicted = trained_model.predict(spectra)
-        result[trained_model_short_name.split('_')[0]] = predicted
+        trained_model = load(f'{MODEL_PATH}/{trained_model_name}')
         
+        predicted = trained_model.predict(spectra)
+        
+        result[trained_model_short_name.split('_')[0]] = predicted
+    
     # Calculating median and mean of predictions of all estimators
     median = result.median(axis=1, skipna=True)
     mean = result.mean(axis=1, skipna=True)

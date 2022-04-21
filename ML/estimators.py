@@ -26,7 +26,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier, AdaBoostClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-# from xgboost import XGBClassifier
 from xgboost.sklearn import XGBClassifier
 from catboost import CatBoostClassifier
 
@@ -123,6 +122,53 @@ classifiers = {
     #                 "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
     #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
     #             }},
+    
+    # TODO add parameters belenging to the classifiers listed below
+    
+    # 'ExtraTreesClassifier':
+    #     {
+    #         'name': 'ExtraTreesClassifier',
+    #         'estimator': ExtraTreesClassifier(task_type="GPU",
+    #                                         devices='0:2'),
+    #         'selector': SelectKBest(),
+    #         'decomposition': PCA(),  # None because PCA() lowers the scores
+    #         'params':
+    #             {
+    #                 "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
+    #                 "classifier__max_depth": [4],  # [2,4,8]  best: 4
+    #                 "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
+    #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
+    #             }},
+    
+    # 'AdaBoostClassifier':
+    #     {
+    #         'name': 'AdaBoostClassifier',
+    #         'estimator': AdaBoostClassifier(task_type="GPU",
+    #                                         devices='0:2'),
+    #         'selector': SelectKBest(),
+    #         'decomposition': PCA(),  # None because PCA() lowers the scores
+    #         'params':
+    #             {
+    #                 "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
+    #                 "classifier__max_depth": [4],  # [2,4,8]  best: 4
+    #                 "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
+    #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
+    #             }},
+    
+    # 'DecisionTreeClassifier':
+    #     {
+    #         'name': 'DecisionTreeClassifier',
+    #         'estimator': DecisionTreeClassifier(task_type="GPU",
+    #                                         devices='0:2'),
+    #         'selector': SelectKBest(),
+    #         'decomposition': PCA(),  # None because PCA() lowers the scores
+    #         'params':
+    #             {
+    #                 "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
+    #                 "classifier__max_depth": [4],  # [2,4,8]  best: 4
+    #                 "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
+    #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
+    #             }},
 }
 
 kfold = StratifiedKFold(n_splits=5, random_state=SEED, shuffle=True)
@@ -154,6 +200,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
             ('classifier', value['estimator']),  # building estimation model
         ])
     
+        # grid = GridSearchCV(tmp_pipe, value['params'], cv=kfold, n_jobs=-1) #fix if possible
         grid = GridSearchCV(tmp_pipe, value['params'], cv=kfold)
         grid.fit(X_train, y_train)
     
@@ -161,7 +208,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
         roc_auc_score_val = roc_auc_score(y_val, grid.predict_proba(X_val)[:, 1])
         roc_auc_score_test = roc_auc_score(y_test, grid.predict_proba(X_test)[:, 1])
     
-        # # Adding params and scores of a model to DataFrame
+        # # Adding params and scores of a model to DataFrame for storage
         scores[key] = (grid.best_params_, grid.best_score_, roc_auc_score_train, roc_auc_score_val, roc_auc_score_test)
     
         # # storing best estimator
@@ -170,9 +217,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
         # # Saving model to file
         if not os.path.isdir(f'{MODEL_PATH}'):
             os.makedirs(f'{MODEL_PATH}')
-            
-        dump(grid.best_estimator_, f'{MODEL_PATH}/{key}_model.joblib')
-    
+
         print(f'{key} has been processed')
         
     #
@@ -189,8 +234,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
         scores.index = scores_index
         scores.to_csv(f'{SCORE_PATH}/scores.csv', index=False)
     except FileNotFoundError:  # if there is no file with scores it is saving new one
-        scores.index = scores_index
-        scores.to_csv(f'{SCORE_PATH}/scores.csv', index=False)
+        scores.to_csv(f'{SCORE_PATH}/scores.csv', index=True)
         
     return scores, models
 
