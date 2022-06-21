@@ -199,7 +199,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
             ('classifier', value['estimator']),  # building estimation model
         ])
     
-        # grid = GridSearchCV(tmp_pipe, value['params'], cv=kfold, n_jobs=-1) #fix if possible
+        # grid = GridSearchCV(tmp_pipe, value['params'], cv=kfold, n_jobs=-1) #fix if possible, to make it work
         grid = GridSearchCV(tmp_pipe, value['params'], cv=kfold)
         grid.fit(X_train, y_train)
     
