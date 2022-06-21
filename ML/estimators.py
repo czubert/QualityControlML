@@ -5,9 +5,6 @@ import os
 import pandas as pd
 from imblearn.pipeline import Pipeline
 
-# # Saving models
-from joblib import dump
-
 # # Preprocessing
 from sklearn.preprocessing import StandardScaler
 from imblearn.under_sampling import RandomUnderSampler
@@ -28,6 +25,8 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost.sklearn import XGBClassifier
 from catboost import CatBoostClassifier
+
+import utils
 
 # Output paths
 MODEL_PATH = 'data_output/step_5_ml/models'
@@ -123,7 +122,7 @@ classifiers = {
     #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
     #             }},
     
-    # TODO add parameters belenging to the classifiers listed below
+    # TODO add parameters belonging to the classifiers listed below
     
     # 'ExtraTreesClassifier':
     #     {
@@ -211,19 +210,26 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
         # # Adding params and scores of a model to DataFrame for storage
         scores[key] = (grid.best_params_, grid.best_score_, roc_auc_score_train, roc_auc_score_val, roc_auc_score_test)
     
-        # # storing best estimator
+        # # Storing best estimator
         models[key] = grid.best_estimator_
     
         # # Saving model to file
-        if not os.path.isdir(f'{MODEL_PATH}'):
-            os.makedirs(f'{MODEL_PATH}')
+        if key == 'LogisticRegression':
+            estimator_name = 'LR'
+        elif key == 'RandomForestClassifier':
+            estimator_name = 'RndForest'
+        elif key == 'XGBClassifier':
+            estimator_name = 'XGB'
+        else:
+            estimator_name = key
+
+        utils.save_as_joblib(grid.best_estimator_, estimator_name, MODEL_PATH)
 
         print(f'{key} has been processed')
         
     #
     # # Saving scores to file
     #
-
     if not os.path.isdir(SCORE_PATH):
         os.makedirs(f'{SCORE_PATH}')
 
