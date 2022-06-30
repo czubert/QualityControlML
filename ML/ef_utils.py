@@ -1,22 +1,6 @@
 import streamlit as st
 import plotly.express as px
 
-from . import vis_utils
-import processing
-from visualisation.draw import fig_layout
-
-def get_laser_intensities():
-    # # #
-    # # Intensities
-    #
-    vis_utils.print_widget_labels('Intensity', 5, 0)
-    cols = st.columns(2)
-    with cols[0]:
-        i_raman = st.number_input('Raman Intensity', 1, 10000, 1000, 100)
-    with cols[1]:
-        i_sers = st.number_input('SERS Intensity', 1, 500000, 60000, 1000)
-    return i_sers, i_raman
-
 
 def num_of_molecules(conc, vol):
     """
@@ -57,27 +41,3 @@ def cal_n_raman(v_compound, compound_density, compound_molecular_weight):
     
     # mol * 1/mol
     return n * 6.02e+23  # calculating the number of molecules using the Avogadro constant
-
-
-def get_df(file, spectrometer):
-    df = processing.save_read.files_to_df(file, spectrometer)
-    df = df.interpolate().bfill().ffill()
-    return df
-
-
-def draw_plots_for_ef(df, plot_palette, plot_template, plot_x_min, plot_x_max, plot_y_min, plot_y_max):
-    fig = px.line(df, color_discrete_sequence=plot_palette)
-    fig_layout(plot_template, fig, plots_colorscale=plot_palette)
-    fig.update_xaxes(range=[plot_x_min, plot_x_max])
-    fig.update_yaxes(range=[plot_y_min, plot_y_max])
-    
-    return fig
-
-
-def get_axes_values(df):
-    x_min = int(df.index.min())
-    x_max = int(df.index.max())
-    y_min = int(df.iloc[:, :].min().min())
-    y_max = int(df.iloc[:, :].max().max())
-    
-    return x_min, x_max, y_min, y_max

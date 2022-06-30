@@ -1,9 +1,10 @@
 import time
 from datetime import datetime
 
-from files_preparation import getting_names, reading_data, grouping_data, rating_spectra, data_analysis
-from ML import train_test_split, estimators
+from files_preparation import getting_names, reading_data, grouping_data, data_analysis
+from ML import train_test_split, estimators, rating_spectra
 
+read_from_files = True
 now = datetime.now()
 
 print(f'Starting time: {now.strftime("%Y_%m_%d %H:%M:%S")}')
@@ -21,7 +22,7 @@ GETTING FILE NAMES FOR FURTHER USE
 
 print('Getting filenames...')
 
-file_names = getting_names.get_names(read_from_file=True)
+file_names = getting_names.get_names(read_from_file=read_from_files)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -40,7 +41,9 @@ start_time = time.time()
 print('Reading files into DataFrames...')
 
 # Getting files as a dict of tuples with metadata and data, keys are types of spectra (ag, au, ag_bg, au_bg
-read_files = reading_data.read_data(file_names, read_from_file=True)
+read_files = reading_data.read_data(file_names, read_from_file=read_from_files)
+raman_pmba = reading_data.read_spectrum('../../../../../PMBA__powder_10%_1s.txt')
+print(raman_pmba)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -63,7 +66,6 @@ grouped_files = grouping_data.group_data(read_files, read_from_file=True)
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
 
-
 """
 ********************************************************************************
 Preparing images for data analysis
@@ -79,7 +81,6 @@ print('Preparing images for data analysis...')
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
-
 
 """
 ********************************************************************************

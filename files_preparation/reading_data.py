@@ -80,6 +80,7 @@ def read_spectrum(filepath):
     :param filepath: String
     :return: DataFrame
     """
+    print(filepath)
     read_params = {'sep': ';', 'skiprows': lambda x: x < 79 or x > 1500, 'decimal': ',',
                    'usecols': ['Raman Shift', DARK],
                    'skipinitialspace': True, 'encoding': "utf-8", 'na_filter': True}

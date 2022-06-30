@@ -51,13 +51,16 @@ def getting_ef():
     x_dimension = 3.5
     y_dimension = 3.5
     
+    # # Surface area development coefficient
+    surface_dev = 2
+    
     # # The area of active surface of the SERS substrate
-    s_platform = ef_utils.get_active_surface_area(x_dimension, y_dimension)
+    s_platform = x_dimension * y_dimension * 10 ** (-6) * surface_dev
     
     # # The coverage of the analyte on the surface between 10^-6 and 6*10^-6 ~=10%
     surface_coverage = 0.1
     
-    # n_sers = (num_molecules * s_laser * surface_coverage) / s_platform  # formula version
+    # n_sers = (num_molecules * s_laser * surface_coverage) / s_platform  # formula version (s_laser zamiast s0)
     n_sers = (num_molecules * s0_spot_area * surface_coverage) / s_platform  # Szymborski use
     
     # # # #
@@ -74,7 +77,7 @@ def getting_ef():
     # # Sixth step of calculations - Determining the number of p-MBA molecules
     # # from which the Raman signal (N_Raman) comes
     #
-
+    
     # # Molecular weight
     compound_density = 1.3
     compound_molecular_weight = 154.19
@@ -85,16 +88,21 @@ def getting_ef():
     # # #
     # # Final, seventh, step of calculations - Calculating the Enhancement Factor
     #
-
+    
     # # SERS intensity and Raman Intensity
-    raman_peak = 100 # podać przedział raman shiftów, w którym znajduje się peak, który chcemy brać pod uwagę
-    sers_peak = 1000 # podać przedział raman shiftów, w którym znajduje się peak odpowiadający temu z raman_peak
-        
-    i_raman = raman_peak.max()[0]
-    i_sers = sers_peak.max()[0]
-
+    raman_peak = 100  # podać przedział raman shiftów, w którym znajduje się peak, który chcemy brać pod uwagę
+    sers_peak = 10000  # podać przedział raman shiftów, w którym znajduje się peak odpowiadający temu z raman_peak
+    
+    i_raman = raman_peak
+    i_sers = sers_peak
+    
+    # i_raman = raman_peak.max()[0]
+    # i_sers = sers_peak.max()[0]
     
     enhancement_factor = (i_sers / n_sers) * (n_raman / i_raman)
     
-    
     return enhancement_factor
+
+
+if __name__ == "__main__":
+    print(f'{getting_ef() / 10 ** 8} x 10^8')

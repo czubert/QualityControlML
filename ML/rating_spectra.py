@@ -31,14 +31,26 @@ def main(grouped_files, border_value, margin_of_error, only_new_spectra=True):
     ratio_df = pd.DataFrame()  # DataFrame that will consists only of max/min ratio for each peak
     ratio_df['id'] = ag_df['id'].str.replace(r'_.*', '')
     
-    # Getting ratio between max and mean value for each peak
+    # # Getting ratio between max and mean value for each peak
+    # for name, values in peaks.items():
+    #     ratio_df.loc[:, name] = ag_df.loc[:, values[0]:values[1]].max(axis=1) \
+    #                             / ag_df.loc[:, values[0]:values[1]].min(axis=1)
+    
+    # TODO czy robić wstępną selekcję na podstawie widma PMBA? Że jak w jakimś punkcie, w którym nie ma peaku
+    #  będzie wartość przekraczająca jakiś próg, to dajemy ocene "0"? Przez to nauczymy go też,
+    #  żeby nie brać pod uwagę brzydkich widm PMBA
+    
+    # We are taking the height of the peak (without background) for the calculations
     for name, values in peaks.items():
         ratio_df.loc[:, name] = ag_df.loc[:, values[0]:values[1]].max(axis=1) \
-                                / ag_df.loc[:, values[0]:values[1]].min(axis=1)
+                                - ag_df.loc[:, values[0]:values[1]].min(axis=1)
+    print(ratio_df)
     
     # TODO, czy sklejanie 2 widm na jednym podłożu ma sens? nie lepiej traktować to jako dwa różne wyniki?
     # Getting best ratio for each peak for each substrate
     best = ratio_df.groupby('id').max()
+    
+    print(best)
     
     """
     Selecting spectra, based on the max/min ratio, that are of high or low quality,
