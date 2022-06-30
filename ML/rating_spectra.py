@@ -16,12 +16,23 @@ file_name = 'grouped_data'
 output_dir_path = 'data_output/step_3_rate_data'
 output_file_name = 'rated_data'
 
+DARK = 'Dark Subtracted #1'
 
-def main(grouped_files, border_value, margin_of_error, only_new_spectra=True):
+
+def main(grouped_files, raman_pmba, border_value, margin_of_error, only_new_spectra=True):
     # Getting relevant data
     ag_df = grouped_files['ag']  # Takes only ag spectra
     
     utils.change_col_names_type_to_str(ag_df)  # changes col names type from int to str, for .loc
+    
+    raman_pmba = raman_pmba.reset_index()
+    raman_pmba.rename(columns={DARK: "Raman PMBA"}, inplace=True)
+    utils.change_col_names_type_to_str(raman_pmba)  # changes col names type from int to str, for .loc
+    raman_pmba = raman_pmba.set_index('Raman Shift')
+    raman_pmba = raman_pmba.T
+    
+    print(ag_df)
+    print(raman_pmba)
     
     # if only_new_spectra == True, this part takes oly new spectra with names a1, a2 etc.
     if only_new_spectra:
@@ -44,13 +55,11 @@ def main(grouped_files, border_value, margin_of_error, only_new_spectra=True):
     for name, values in peaks.items():
         ratio_df.loc[:, name] = ag_df.loc[:, values[0]:values[1]].max(axis=1) \
                                 - ag_df.loc[:, values[0]:values[1]].min(axis=1)
-    print(ratio_df)
     
     # TODO, czy sklejanie 2 widm na jednym podłożu ma sens? nie lepiej traktować to jako dwa różne wyniki?
     # Getting best ratio for each peak for each substrate
     best = ratio_df.groupby('id').max()
     
-    print(best)
     
     """
     Selecting spectra, based on the max/min ratio, that are of high or low quality,
@@ -83,15 +92,15 @@ def main(grouped_files, border_value, margin_of_error, only_new_spectra=True):
     return df_wybrane
 
 
-def rate_spectra(grouped_files, border_value, margin_of_error, read_from_file=True, only_new_spectra=True):
+def rate_spectra(grouped_files, raman_pmba, border_value, margin_of_error, read_from_file=True, only_new_spectra=True):
     if read_from_file:
         if not os.path.isfile(output_dir_path + '//' + output_file_name + '.joblib'):
-            return main(grouped_files, border_value, margin_of_error, only_new_spectra)
+            return main(grouped_files, raman_pmba, border_value, margin_of_error, only_new_spectra)
         else:
             return utils.read_joblib(output_file_name, output_dir_path)
     
     else:
-        return main(grouped_files, border_value, margin_of_error, only_new_spectra)
+        return main(grouped_files, raman_pmba, border_value, margin_of_error, only_new_spectra)
 
 
 if __name__ == "__main__":

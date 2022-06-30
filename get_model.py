@@ -42,8 +42,7 @@ print('Reading files into DataFrames...')
 
 # Getting files as a dict of tuples with metadata and data, keys are types of spectra (ag, au, ag_bg, au_bg
 read_files = reading_data.read_data(file_names, read_from_file=read_from_files)
-raman_pmba = reading_data.read_spectrum('../../../../../PMBA__powder_10%_1s.txt')
-print(raman_pmba)
+raman_pmba = reading_data.read_spectrum('data_input/PMBA__powder_10%_1s.txt')
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -97,6 +96,7 @@ Adding 'Quality' feature to background spectra based on 'id'
 start_time = time.time()
 print('Rating spectra...')
 rated_spectra = rating_spectra.rate_spectra(grouped_files,
+                                            raman_pmba,
                                             border_value=160,
                                             margin_of_error=0.15,
                                             read_from_file=False,
