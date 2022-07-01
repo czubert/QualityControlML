@@ -27,12 +27,13 @@ def main(grouped_files, raman_pmba, border_value, margin_of_error, only_new_spec
     
     raman_pmba = raman_pmba.reset_index()
     raman_pmba.rename(columns={DARK: "Raman PMBA"}, inplace=True)
-    utils.change_col_names_type_to_str(raman_pmba)  # changes col names type from int to str, for .loc
     raman_pmba = raman_pmba.set_index('Raman Shift')
     raman_pmba = raman_pmba.T
+    utils.change_col_names_type_to_str(raman_pmba)  # changes col names type from int to str, for .loc
     
-    print(ag_df)
-    print(raman_pmba)
+    sers_and_raman = pd.concat([raman_pmba, ag_df], axis=0)
+    
+    print(sers_and_raman.iloc[:, 0:10])
     
     # if only_new_spectra == True, this part takes oly new spectra with names a1, a2 etc.
     if only_new_spectra:
@@ -59,7 +60,6 @@ def main(grouped_files, raman_pmba, border_value, margin_of_error, only_new_spec
     # TODO, czy sklejanie 2 widm na jednym podłożu ma sens? nie lepiej traktować to jako dwa różne wyniki?
     # Getting best ratio for each peak for each substrate
     best = ratio_df.groupby('id').max()
-    
     
     """
     Selecting spectra, based on the max/min ratio, that are of high or low quality,
