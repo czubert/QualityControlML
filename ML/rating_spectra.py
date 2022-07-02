@@ -1,13 +1,16 @@
 import os
 import pandas as pd
 import utils
+import plotly.express as px
+
+from ML import enhancement_factor
 
 # constants
 peaks = {
     # beginning of the peak and end of the peak to estimate max and min values
-    'peak1': ['671', '761'],
-    'peak2': ['801', '881'],
-    'peak3': ['970', '1031'],
+    'peak1': ['1031', '1119'],
+    'peak2': ['1160', '1221'],
+    'peak3': ['1535', '1685'],
 }
 # Input path
 dir_path = 'data_output/step_2_group_data'
@@ -20,33 +23,30 @@ DARK = 'Dark Subtracted #1'
 
 
 def main(grouped_files, raman_pmba, border_value, margin_of_error, only_new_spectra=True):
-    # Getting relevant data
-    ag_df = grouped_files['ag']  # Takes only ag spectra
-    
-    utils.change_col_names_type_to_str(ag_df)  # changes col names type from int to str, for .loc
-    
+    # Getting RAMAN spectra of PMBA
     raman_pmba = raman_pmba.reset_index()
     raman_pmba.rename(columns={DARK: "Raman PMBA"}, inplace=True)
     raman_pmba = raman_pmba.set_index('Raman Shift')
-    raman_pmba = raman_pmba.T
+    raman_pmba = raman_pmba.T  # transposition of the DF so it fits the ag_df for concat
     utils.change_col_names_type_to_str(raman_pmba)  # changes col names type from int to str, for .loc
     
-    sers_and_raman = pd.concat([raman_pmba, ag_df], axis=0)
+    # Getting the value of the peak (max - min values in the range),
+    subtracted_raman_df = pd.DataFrame()
+    for name, values in peaks.items():
+        subtracted_raman_df.loc[:, name] = raman_pmba.loc[:, values[0]:values[1]].max(axis=1) \
+                                           - raman_pmba.loc[:, values[0]:values[1]].min(axis=1)
     
-    print(sers_and_raman.iloc[:, 0:10])
+    # Getting SERS spectra of PMBA
+    ag_df = grouped_files['ag']  # Takes only ag spectra
+    utils.change_col_names_type_to_str(ag_df)  # changes col names type from int to str, for .loc
     
-    # if only_new_spectra == True, this part takes oly new spectra with names a1, a2 etc.
+    # This part takes only new spectra with names a1, a2 etc.
     if only_new_spectra:
         mask = ag_df['id'].str.startswith('s')  # mask to get only new spectra
         ag_df = ag_df[~mask]  # Takes only new spectra out of all ag spectra
     
-    ratio_df = pd.DataFrame()  # DataFrame that will consists only of max/min ratio for each peak
-    ratio_df['id'] = ag_df['id'].str.replace(r'_.*', '')
-    
-    # # Getting ratio between max and mean value for each peak
-    # for name, values in peaks.items():
-    #     ratio_df.loc[:, name] = ag_df.loc[:, values[0]:values[1]].max(axis=1) \
-    #                             / ag_df.loc[:, values[0]:values[1]].min(axis=1)
+    subtracted_sers_df = pd.DataFrame()  # DataFrame that will consists only of max/min ratio for each peak
+    subtracted_sers_df['id'] = ag_df['id'].str.replace(r'_.*', '')
     
     # TODO czy robić wstępną selekcję na podstawie widma PMBA? Że jak w jakimś punkcie, w którym nie ma peaku
     #  będzie wartość przekraczająca jakiś próg, to dajemy ocene "0"? Przez to nauczymy go też,
@@ -54,12 +54,37 @@ def main(grouped_files, raman_pmba, border_value, margin_of_error, only_new_spec
     
     # We are taking the height of the peak (without background) for the calculations
     for name, values in peaks.items():
-        ratio_df.loc[:, name] = ag_df.loc[:, values[0]:values[1]].max(axis=1) \
-                                - ag_df.loc[:, values[0]:values[1]].min(axis=1)
+        subtracted_sers_df.loc[:, name] = ag_df.loc[:, values[0]:values[1]].max(axis=1) \
+                                          - ag_df.loc[:, values[0]:values[1]].min(axis=1)
+    
+    # TODO wywalić potem
+    
+    print(subtracted_raman_df)
+    print()
     
     # TODO, czy sklejanie 2 widm na jednym podłożu ma sens? nie lepiej traktować to jako dwa różne wyniki?
     # Getting best ratio for each peak for each substrate
-    best = ratio_df.groupby('id').max()
+    best = subtracted_sers_df.groupby('id').max()
+
+    import os
+
+    if not os.path.exists("images"):
+        os.mkdir("images")
+    for peak in peaks.keys():
+        best['ef'] = best[peak].apply(lambda x: enhancement_factor.calculate_ef(x, subtracted_raman_df[peak]))
+        
+        # Hist plots
+        hist_plot = px.histogram(best, x='ef', nbins=50)
+        hist_plot.write_image(f'images/hist_plot-{peak}.jpg')
+        
+        # Bar plots
+        best_sorted = best.sort_values(peak)
+        bar_plot = px.bar(best_sorted, y='ef')
+        bar_plot.write_image(f'images/bar_plot-{peak}.jpg')
+        
+        # Violin plots
+        vio_plot = px.violin(best_sorted, y='ef')
+        vio_plot.write_image(f'images/vio_plot-{peak}.jpg')
     
     """
     Selecting spectra, based on the max/min ratio, that are of high or low quality,

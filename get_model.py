@@ -130,7 +130,7 @@ Checking many estimators, with different parameters
 start_time = time.time()
 print('Looking for best estimator... be patient...')
 
-scores, models = estimators.get_best_classsifier(**ml_variables)
+# scores, models = estimators.get_best_classsifier(**ml_variables)
 
 print(f'Models trained in {round(time.time() - start_time, 2)} seconds')
 print()

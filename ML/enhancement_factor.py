@@ -1,8 +1,8 @@
 import numpy as np
-import ef_utils
+from ML import ef_utils
 
 
-def getting_ef():
+def calculate_ef(i_raman=1000, i_sers=100000):
     """
     Calculating EF for spectra quality labeling
     :return:  Float
@@ -90,19 +90,14 @@ def getting_ef():
     #
     
     # # SERS intensity and Raman Intensity
-    raman_peak = 100  # podać przedział raman shiftów, w którym znajduje się peak, który chcemy brać pod uwagę
-    sers_peak = 10000  # podać przedział raman shiftów, w którym znajduje się peak odpowiadający temu z raman_peak
-    
-    i_raman = raman_peak
-    i_sers = sers_peak
-    
-    # i_raman = raman_peak.max()[0]
-    # i_sers = sers_peak.max()[0]
-    
+    # raman and sers intensities must be provided as parameters
     enhancement_factor = (i_sers / n_sers) * (n_raman / i_raman)
     
     return enhancement_factor
 
 
 if __name__ == "__main__":
-    print(f'{getting_ef() / 10 ** 8} x 10^8')
+    ef = calculate_ef()
+    power = int(np.log10(ef)//1)
+    ef_shortened = ef/10**power
+    print(f'{ef_shortened} x 10^{power}')
