@@ -12,7 +12,7 @@ def main(peaks, best, subtracted_raman_df):
 
     for peak in peaks.keys():
         best['ef'] = best[peak].apply(
-            lambda raman_intensity: enhancement_factor.calculate_ef(raman_intensity, subtracted_raman_df[peak]))
+            lambda sers_intensity: enhancement_factor.calculate_ef(sers_intensity, subtracted_raman_df[peak]))
 
         best['ef'].sort_values().to_csv(f'images/EFs_{peak}.csv')
 

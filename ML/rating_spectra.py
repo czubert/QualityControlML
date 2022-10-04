@@ -28,7 +28,7 @@ def main(grouped_files, raman_pmba, chosen_peak, border_value, margin_of_error, 
     raman_pmba = raman_pmba.T  # transposition of the DF so it fits the ag_df for concat
     utils.change_col_names_type_to_str(raman_pmba)  # changes col names type from int to str, for .loc
 
-    # Getting the value of the peak (max - min values in the range) so called baseline subtraction,
+    # Getting the value of the peak (max - min values in the range) so-called baseline subtraction,
     subtracted_raman_df = pd.DataFrame()
     for name, values in peaks.items():
         subtracted_raman_df.loc[:, name] = raman_pmba.loc[:, values[0]:values[1]].max(axis=1) \
@@ -38,12 +38,12 @@ def main(grouped_files, raman_pmba, chosen_peak, border_value, margin_of_error, 
     ag_df = grouped_files['ag']  # Takes only ag spectra
     ag_df = utils.change_col_names_type_to_str(ag_df)  # changes col names type from int to str, for .loc
 
-    # This part takes only new spectra with names a1, a2 etc.
+    # This part takes only new spectra with names a1, a2 etc. - spectra collected specially for ML
     if only_new_spectra:
         mask = ag_df['id'].str.startswith('s')  # mask to get only new spectra
         ag_df = ag_df[~mask]  # Takes only new spectra out of all ag spectra
 
-    subtracted_sers_df = pd.DataFrame()  # DataFrame that will consists only of max/min ratio for each peak
+    subtracted_sers_df = pd.DataFrame()  # DataFrame that will consist only of max/min ratio for each peak
     subtracted_sers_df['id'] = ag_df['id'].str.replace(r'_.*', '')
 
     # TODO czy robić wstępną selekcję na podstawie widma PMBA? Że jak w jakimś punkcie, w którym nie ma peaku
@@ -82,15 +82,15 @@ def main(grouped_files, raman_pmba, chosen_peak, border_value, margin_of_error, 
 
     # Getting only selected (high, low) spectra out of all spectra, based on max/min ratio of the peaks
     mask = df['id'].str[:-2].isin(all_spectra)
-    df_wybrane = df[mask]
+    df_chosen = df[mask]
 
-    # Giving a  1/0 label to a spectrum, depending if a spectrum is in a list of high or low of max/min ratio
-    df_wybrane['y'] = df['id'].str[:-2].isin(high).astype(int)
+    # Giving a  1/0 label to a spectrum, depending on if a spectrum is in a list of high or low of max/min ratio
+    df_chosen['y'] = df['id'].str[:-2].isin(high).astype(int)
 
     # Saving results to a joblib file
-    utils.save_as_joblib(df_wybrane, output_file_name, output_dir_path)
+    utils.save_as_joblib(df_chosen, output_file_name, output_dir_path)
 
-    return df_wybrane
+    return df_chosen
 
 
 def rate_spectra(grouped_files, raman_pmba, border_value, margin_of_error, chosen_peak, only_new_spectra,

@@ -2,7 +2,7 @@ import numpy as np
 from ML import ef_utils
 
 
-def calculate_ef(i_raman=1000, i_sers=100000):
+def calculate_ef(i_sers=100000, i_raman=1000):
     """
     Calculating EF for spectra quality labeling
     :return:  Float
