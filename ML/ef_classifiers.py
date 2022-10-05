@@ -19,14 +19,14 @@ evaluated_classifiers = {
             'decomposition': PCA(),
             'params':
                 {
-                    "classifier__penalty": ['l1'],
-                    "classifier__tol": [0.01],
-                    "classifier__C": [9],
-                    "classifier__class_weight": ['balanced'],
+                    "classifier__penalty": ['none'],
+                    "classifier__tol": [0.00005],
+                    "classifier__C": [0.00085],
+                    "classifier__class_weight": [None],
                     "classifier__solver": ['saga'],
-                    "classifier__max_iter": [500],
-                    'selector__k': [600],
-                    'decomposition__n_components': [100],
+                    "classifier__max_iter": [630],
+                    'selector__k': [920],
+                    'decomposition__n_components': [86],
                 }},
 
     # 'SVC':
@@ -146,26 +146,6 @@ evaluated_classifiers = {
 }
 
 not_evaluated_classifiers = {
-    'LogisticRegression':
-        {
-            'name': 'LogisticRegression',
-            'estimator': LogisticRegression(),
-            'selector': SelectKBest(),
-            'decomposition': PCA(),
-            'params':
-                {
-                    "classifier__penalty": ['l1', 'l2', 'elasticnet', 'none'],
-                    # ['l1','l2', 'elasticnet', 'none'] best: l1
-                    "classifier__tol": [0.0001, 0.001, 0.01, 0.1],
-                    # [0.00001,0.0001,0.001,0.01, 0.1]  best: 0.01
-                    "classifier__C": [0.01, 1, 10],  # [0.01,0.01,1,10]  best:
-                    "classifier__class_weight": ['balanced', None],  # ['balanced', None]  best: 'balanced'
-                    "classifier__solver": ['saga'],  # []  best: 'saga'
-                    "classifier__max_iter": [60, 90],  # [60, 90, 100, 150] best:
-                    'selector__k': [200, 800],  # [200, 400, 600]  best:
-                    'decomposition__n_components': [1, 10, 100],  # [5,10,50,100,200]  best: 100
-                }},
-
     # 'SVC':
     #     {
     #         'name': 'SVC',
@@ -174,14 +154,14 @@ not_evaluated_classifiers = {
     #         'decomposition': PCA(),  # None because PCA() lowers the scores
     #         'params':
     #             {
-    #                 "classifier__C": [2],  # [0.01, 0.1, 1, 2, 4]  best: 2
-    #                 "classifier__kernel": ['rbf'],  # ['rbf','poly','linear']  best: 'rbf'
-    #                 "classifier__degree": [1],  # [1,2,3,5]  best: 1
-    #                 "classifier__max_iter": [-1],  # [-1, 1, 10, 100, 1000]  best: -1
-    #                 "classifier__gamma": ['auto'],  # []  best: 'auto'
-    #                 "classifier__tol": [0.001],  # [0.001, 0.01,0.1 ,1]  best: 0.1
-    #                 "classifier__probability": [True],  # [True, False]  best: True
-    #                 'selector__k': [30],  # [30, 50, 90, 100, 150, 200]  best: 90
+    #                 "classifier__C": [[0.01, 0.1, 1]],  # [0.01, 0.1, 1, 2, 4]  best: 2
+    #                 "classifier__kernel": ['rbf', 'poly', 'linear'],  # ['rbf','poly','linear']  best: 'rbf'
+    #                 "classifier__degree": [1, 3, 5],  # [1,2,3,5]  best: 1
+    #                 "classifier__max_iter": [-1, 1, 10, 100],  # [-1, 1, 10, 100, 1000]  best: -1
+    #                 "classifier__gamma": ['auto'],
+    #                 "classifier__tol": [0.001, 0.1, 1],  # [0.001, 0.01,0.1 ,1]  best: 0.1
+    #                 "classifier__probability": [True, False],  # [True, False]  best: True
+    #                 'selector__k': [30, 200],  # [30, 50, 90, 100, 150, 200]  best: 90
     #             }},
 
     # 'RandomForestClassifier':
@@ -203,21 +183,21 @@ not_evaluated_classifiers = {
     #                 'selector__k': [100],  # [50,100,120,130,150,200, 300, 400, 600]  best: 100
     #             }},
 
-    # 'XGBClassifier':
-    #     {
-    #         'name': 'XGBClassifier',
-    #         'estimator': XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor'),
-    #         'selector': SelectKBest(),
-    #         'decomposition': PCA(),  # None because PCA() lowers the scores
-    #         'params':
-    #             {
-    #                 "classifier__n_estimators": [600],  # [200, 500, 600, 800, 1000]  best: 600
-    #                 "classifier__max_depth": [4],  # [2,4,8]  best: 4
-    #                 "classifier__learning_rate": [0.01],  # [0.01, 0.1, 0.5]  best: 0.01
-    #                 "classifier__subsample": [1],  # []  best: 1
-    #                 "classifier__colsample_bytree": [1],  # [0.01, 0.1, 1]  best: 1
-    #                 'selector__k': [30],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
-    #             }},
+    'XGBClassifier':
+        {
+            'name': 'XGBClassifier',
+            'estimator': XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor'),
+            'selector': SelectKBest(),
+            'decomposition': PCA(),  # None because PCA() lowers the scores
+            'params':
+                {
+                    "classifier__n_estimators": [200, 600, 1000],  # [200, 500, 600, 800, 1000]  best: 600
+                    "classifier__max_depth": [2,4,8],  # [2,4,8]  best: 4
+                    "classifier__learning_rate": [0.01, 0.1, 0.5],  # [0.01, 0.1, 0.5]  best: 0.01
+                    "classifier__subsample": [1],
+                    "classifier__colsample_bytree": [0.01, 0.1, 1],  # [0.01, 0.1, 1]  best: 1
+                    'selector__k': [10, 50, 90],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
+                }},
 
     # 'CatBoostClassifier':
     #     {

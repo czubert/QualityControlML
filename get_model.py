@@ -131,5 +131,10 @@ print('Looking for best estimator... be patient...')
 
 scores, models = estimators.get_best_classsifier(**ml_variables)
 
-print(f'Models trained in {round(time.time() - start_time, 2)} seconds')
+time_s = round(time.time() - start_time, 2)
+time_min = round(time_s / 60)
+time_h = round(time_min / 60)
+print(f'Models trained in {time_s} seconds')
+print(f'Models trained in {time_min} minutes')
+print(f'Models trained in {time_h} hours')
 print()
