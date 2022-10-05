@@ -4,7 +4,7 @@ from datetime import datetime
 from files_preparation import getting_names, reading_data, grouping_data, data_analysis
 from ML import train_test_split, estimators, rating_spectra
 
-read_from_files = True
+read_from_files = False
 now = datetime.now()
 
 print(f'Starting time: {now.strftime("%Y_%m_%d %H:%M:%S")}')
@@ -60,7 +60,7 @@ One DataFrame per one Spectra Type
 start_time = time.time()
 print('Grouping data...')
 
-grouped_files = grouping_data.group_data(read_files, read_from_file=True)
+grouped_files = grouping_data.group_data(read_files, read_from_file=False)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -72,7 +72,7 @@ Preparing images for data analysis
 
 ********************************************************************************
 """
-
+# TODO probably this part should be removed
 start_time = time.time()
 print('Preparing images for data analysis...')
 
@@ -92,13 +92,13 @@ Adding 'Quality' feature to background spectra based on 'id'
 """
 start_time = time.time()
 print('Rating spectra...')
+
 rated_spectra = rating_spectra.rate_spectra(grouped_files,
                                             raman_pmba,
-                                            border_value=160,
-                                            margin_of_error=0.15,
-                                            read_from_file=False,
-                                            only_new_spectra=True,
-                                            chosen_peak='peak2')
+                                            chosen_peak='peak2',
+                                            border_value=51000000,
+                                            margin_of_error=0.10,
+                                            only_new_spectra=True)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
