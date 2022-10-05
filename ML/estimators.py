@@ -185,7 +185,7 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
     :param y_test: DataFrame of labels for testing
     :return: DataFrame of obtained scores for each estimator, Dict of trained models
     """
-    scores_index = ['scorer', 'best_params', 'best_score', 'roc_auc_score_train', 'roc_auc_score_val',
+    scores_index = ['best_params', 'best_score', 'roc_auc_score_train', 'roc_auc_score_val',
                     'roc_auc_score_test']
     scoring_for_gs_cv = ['accuracy', 'precision', 'roc_auc', ]
     scores = pd.DataFrame(index=scores_index)
@@ -210,14 +210,13 @@ def get_best_classsifier(X_train, X_val, X_test, y_train, y_val, y_test):
         roc_auc_score_test = roc_auc_score(y_test, grid.predict_proba(X_test)[:, 1])
 
         # # Adding params and scores of a model to DataFrame for storage
-        scores[estimator] = (
-            grid.cv_results_, grid.best_params_, grid.best_score_, roc_auc_score_train, roc_auc_score_val,
+        scores[estimator] = (grid.best_params_, grid.best_score_, roc_auc_score_train, roc_auc_score_val,
             roc_auc_score_test)
 
         # # Storing best estimator
         models[estimator] = grid.best_estimator_
 
-        # # Saving model to file
+        # # Saving model to file - names so it is easier to read in a program
         if estimator == 'LogisticRegression':
             estimator_name = 'LR'
         elif estimator == 'RandomForestClassifier':

@@ -4,7 +4,7 @@ from datetime import datetime
 from files_preparation import getting_names, reading_data, grouping_data, data_analysis
 from ML import train_test_split, estimators, rating_spectra
 
-read_from_files = False
+read_from_files = True
 now = datetime.now()
 
 print(f'Starting time: {now.strftime("%Y_%m_%d %H:%M:%S")}')
@@ -60,7 +60,7 @@ One DataFrame per one Spectra Type
 start_time = time.time()
 print('Grouping data...')
 
-grouped_files = grouping_data.group_data(read_files, read_from_file=False)
+grouped_files = grouping_data.group_data(read_files, read_from_file=read_from_files)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
