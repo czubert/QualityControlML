@@ -6,6 +6,9 @@
       <excludeFolder url="file://$MODULE_DIR$/data_output" />
       <excludeFolder url="file://$MODULE_DIR$/data_output_chasz" />
       <excludeFolder url="file://$MODULE_DIR$/_data_output_chasz" />
+      <excludeFolder url="file://$MODULE_DIR$/catboost_info" />
+      <excludeFolder url="file://$MODULE_DIR$/data_output2" />
+      <excludeFolder url="file://$MODULE_DIR$/images" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
