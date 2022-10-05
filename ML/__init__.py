@@ -1,3 +1,4 @@
+from . import ef_classifiers
 from . import ef_utils
 from . import enhancement_factor
 from . import estimators

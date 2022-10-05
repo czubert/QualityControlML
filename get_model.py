@@ -93,12 +93,13 @@ Adding 'Quality' feature to background spectra based on 'id'
 start_time = time.time()
 print('Rating spectra...')
 
+# PARAMS here you can change params which have impact on spectra rating
 rated_spectra = rating_spectra.rate_spectra(grouped_files,
                                             raman_pmba,
-                                            chosen_peak='peak2',
-                                            border_value=51000000,
-                                            margin_of_error=0.10,
-                                            only_new_spectra=True)
+                                            chosen_peak='peak2',  # which peak should be taken (peak1, peak2, peak3)
+                                            border_value=51000000,  # the value of the border between good/bad spectra
+                                            margin_of_error=0.10,  # % of spectra that should increase above border
+                                            only_new_spectra=True)  # if you want to work on ML spectra only
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()

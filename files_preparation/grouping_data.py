@@ -30,9 +30,7 @@ def main(separated_names):
         # grouped_df.dropna(how="all",axis=1, inplace=True)
         
         #TODO sprawdzić czy to ma wpływ na szybkość działania i wyniki, przerzucić do preprocessingu potem
-        #WHAT na szczescie uint16 ma zasieg do 65535,
-        # czyli odrobinę powyżej max z instrumentu pomiarowego
-        # grouped_df = grouped_df.astype(np.uint16)
+
         #meta_df.loc['file_name'] = name
         dict_of_grouped_dfs[substrate_type] = grouped_df
     
