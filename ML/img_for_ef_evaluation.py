@@ -36,6 +36,12 @@ def main(peaks, best, subtracted_raman_df):
 
 
 def ecdf_plot(ser, title):
+    """
+    Cumulated Distribution Plot
+    :param ser: Series
+    :param title: Str
+    :return: Plotly.Express Figure
+    """
     sq = pd.Series(1, index=ser).sort_index()
     sq = sq.cumsum() / sq.sum()
 
@@ -58,5 +64,3 @@ def ecdf_plot(ser, title):
         )
     )
     return fig
-
-
