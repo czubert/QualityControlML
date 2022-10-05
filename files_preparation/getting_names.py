@@ -31,7 +31,13 @@ def main():
     for spectra_type in file_names.keys():
         if spectra_type in new_file_names.keys():
             file_names[spectra_type] = file_names[spectra_type] + new_file_names[spectra_type]
-    
+
+    if not file_names:
+        try:
+            file_names = new_file_names
+        except:
+            print('No filenames')
+
     utils.save_as_joblib(file_names, file_path, dir_path)
     
     return file_names
@@ -59,7 +65,7 @@ def separate_by_type_names(files_names_lower):
     :param files_names_lower: list
     :return: dictionary
     """
-    separated_by_type_names = {'ag': [], 'au': [], 'ag_bg': [], 'au_bg': []}
+    separated_by_type_names = {}
     not_assigned_spectra = []
     
     bg_pattern = r"t[lł][ao]"
@@ -76,20 +82,32 @@ def separate_by_type_names(files_names_lower):
         
         # Ag substrates with PMBA analyte
         if not agau_in_name and not bg_in_name and pmba_in_name:
-            separated_by_type_names['ag'].append(name)
-        
+            if 'ag' not in separated_by_type_names.keys():
+                separated_by_type_names['ag'] = name
+            else:
+                separated_by_type_names['ag'].append(name)
+
         # Au substrates with PMBA analyte
         elif agau_in_name and not bg_in_name and pmba_in_name:
-            separated_by_type_names['au'].append(name)
-        
+            if 'au' not in separated_by_type_names.keys():
+                separated_by_type_names['au'] = name
+            else:
+                separated_by_type_names['au'].append(name)
+
         # Au substrates background
         elif (prep_utils.pattern_in_name(name, au_bg_pattern)) & (not pmba_in_name):
-            separated_by_type_names['au_bg'].append(name)
-        
+            if 'au_bg' not in separated_by_type_names.keys():
+                separated_by_type_names['au_bg'] = name
+            else:
+                separated_by_type_names['au_bg'].append(name)
+
         # Ag substrates background
         elif (prep_utils.pattern_in_name(name, ag_bg_pattern)) & (not pmba_in_name):
-            separated_by_type_names['ag_bg'].append(name)
-        
+            if 'ag_bg' not in separated_by_type_names.keys():
+                separated_by_type_names['ag_bg'] = name
+            else:
+                separated_by_type_names['ag_bg'].append(name)
+
         # Files with wrong names or different analytes
         else:
             not_assigned_spectra.append(name)
