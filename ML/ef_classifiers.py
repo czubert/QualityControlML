@@ -191,12 +191,12 @@ not_evaluated_classifiers = {
             'decomposition': PCA(),  # None because PCA() lowers the scores
             'params':
                 {
-                    "classifier__n_estimators": [200, 600, 1000],  # [200, 500, 600, 800, 1000]  best: 600
-                    "classifier__max_depth": [2,4,8],  # [2,4,8]  best: 4
-                    "classifier__learning_rate": [0.01, 0.1, 0.5],  # [0.01, 0.1, 0.5]  best: 0.01
+                    "classifier__n_estimators": [450, 500, 550],
+                    "classifier__max_depth": [7, 8, 9],
+                    "classifier__learning_rate": [0.005, 0.01, 0.015],
                     "classifier__subsample": [1],
-                    "classifier__colsample_bytree": [0.01, 0.1, 1],  # [0.01, 0.1, 1]  best: 1
-                    'selector__k': [10, 50, 90],  # [10, 20, 25, 30, 35, 40, 50, 90]  best: 30
+                    "classifier__colsample_bytree": [1, 2, 3],
+                    'selector__k': [60, 90, 120],
                 }},
 
     # 'CatBoostClassifier':
