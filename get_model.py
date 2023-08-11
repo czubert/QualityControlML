@@ -4,8 +4,14 @@ from datetime import datetime
 from files_preparation import getting_names, reading_data, grouping_data, data_analysis
 from ML import train_test_split, estimators, rating_spectra
 
-read_from_files = True
+# read_from_files = True
+read_from_files = False
 now = datetime.now()
+
+# PARAMS
+peak = {'name': 'peak1', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
+peak2 = {'name': 'peak2', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
+peak3 = {'name': 'peak3', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
 
 print(f'Starting time: {now.strftime("%Y_%m_%d %H:%M:%S")}')
 print()
@@ -76,9 +82,10 @@ Preparing images for data analysis
 start_time = time.time()
 print('Preparing images for data analysis...')
 
-# data_analysis.run(grouped_files, best_ratio=True, peak='peak2')
+# data_analysis.run(grouped_files, best_ratio=True, peak=peak['name'])
+data_analysis.run(grouped_files, best_ratio=True, peak='peak1')
 
-print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+print(f'Spectra saved in {round(time.time() - start_time, 2)} seconds')
 print()
 
 """
@@ -94,12 +101,13 @@ start_time = time.time()
 print('Rating spectra...')
 
 # PARAMS here you can change params which have impact on spectra rating
-rated_spectra = rating_spectra.rate_spectra(grouped_files,
-                                            raman_pmba,
-                                            chosen_peak='peak2',  # which peak should be taken (peak1, peak2, peak3)
-                                            border_value=51000000,  # the value of the border between good/bad spectra
-                                            margin_of_error=0.10,  # % of spectra that should increase above border
-                                            only_new_spectra=True)  # if you want to work on ML spectra only
+rated_spectra = rating_spectra.rate_spectra(
+    grouped_files,
+    raman_pmba,
+    chosen_peak=peak['name'],  # which peak should be taken (peak1, peak2, peak3)
+    border_value=peak['border_value'],  # value of the border between good/bad spectra
+    margin_of_error=peak['margin_of_error'],  # % of spectra that should increase above border
+    only_new_spectra=True)  # if you want to work on ML spectra only
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()

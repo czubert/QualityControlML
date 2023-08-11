@@ -6,15 +6,10 @@ import plotly.express as px
 from ML import enhancement_factor
 import utils
 
-# constants
-PEAKS = {
-    # beginning of the peak and end of the peak to estimate max and min values
-    'peak1': ['1031', '1129'],
-    'peak2': ['1156', '1221'],
-    'peak3': ['1535', '1685'],
-}
 
+PATH = 'data_output/images'
 DARK = 'Dark Subtracted #1'
+
 
 def get_raman_intensities(raman_pmba):
     # Getting RAMAN spectra of PMBA
@@ -26,7 +21,7 @@ def get_raman_intensities(raman_pmba):
 
     # Getting the value of the peak (max - min values in the range) so-called baseline subtraction,
     subtracted_raman_df = pd.DataFrame()
-    for name, values in PEAKS.items():
+    for name, values in utils.PEAKS.items():
         subtracted_raman_df.loc[:, name] = raman_pmba.loc[:, values[0]:values[1]].max(axis=1) \
                                            - raman_pmba.loc[:, values[0]:values[1]].min(axis=1)
 
@@ -51,7 +46,7 @@ def get_sers_intensities(grouped_files, only_new_spectra):
     #  żeby nie brać pod uwagę brzydkich widm PMBA
 
     # We are taking the intensities of the peak (without background) for the calculations
-    for name, values in PEAKS.items():
+    for name, values in utils.PEAKS.items():
         subtracted_sers_df.loc[:, name] = ag_df.loc[:, values[0]:values[1]].max(axis=1) \
                                           - ag_df.loc[:, values[0]:values[1]].min(axis=1)
 
@@ -63,37 +58,38 @@ def get_sers_intensities(grouped_files, only_new_spectra):
 
 
 def draw_plot(best, subtracted_raman_df):
-    if not os.path.exists("images"):
-        os.mkdir("images")
+    if not os.path.exists(PATH):
+        os.mkdir(PATH)
 
-    for peak in PEAKS.keys():
+    for peak in utils.PEAKS.keys():
         best['ef'] = best[peak].apply(
             lambda sers_intensity: enhancement_factor.calculate_ef(sers_intensity, subtracted_raman_df[peak]))
 
-        best['ef'].sort_values().to_csv(f'images/EFs_{peak}.csv')
+        best['ef'].sort_values().to_csv(f'{PATH}/EFs_{peak}.csv')
 
         # Hist plots
         hist_plot = px.histogram(best, x='ef', nbins=200, marginal='box', title=f'Hist plot of {peak}', width=1280,
                                  height=800)
-        hist_plot.write_image(f'images/hist_plot-{peak}.jpg')
+        hist_plot.write_image(f'{PATH}/hist_plot-{peak}.jpg')
 
         # Bar plots
         best_sorted = best.sort_values('ef')
         bar_plot = px.bar(best_sorted, y='ef', title=f'Bar plot of {peak}', width=1280, height=800)
-        bar_plot.write_image(f'images/bar_plot-{peak}.jpg')
+        bar_plot.write_image(f'{PATH}/bar_plot-{peak}.jpg')
 
         # Violin plots
         vio_plot = px.violin(best_sorted, y='ef', title=f'Violin plot of {peak}', width=1280, height=800)
-        vio_plot.write_image(f'images/vio_plot-{peak}.jpg')
+        vio_plot.write_image(f'{PATH}/vio_plot-{peak}.jpg')
 
         # cumulative plots
         cum_plot = ecdf_plot(best_sorted['ef'], peak)
-        cum_plot.write_image(f'images/cum_plot-{peak}.jpg')
+        cum_plot.write_image(f'{PATH}/cum_plot-{peak}.jpg')
 
         # showing cumulative plots in a browser
         # import plotly.io as pio
         # pio.renderers.default = 'browser'
         # pio.show(cum_plot)
+
 
 def ecdf_plot(ser, title):
     """

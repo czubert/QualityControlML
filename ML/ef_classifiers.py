@@ -183,21 +183,21 @@ not_evaluated_classifiers = {
     #                 'selector__k': [100],  # [50,100,120,130,150,200, 300, 400, 600]  best: 100
     #             }},
 
-    'XGBClassifier':
-        {
-            'name': 'XGBClassifier',
-            'estimator': XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor'),
-            'selector': SelectKBest(),
-            'decomposition': PCA(),  # None because PCA() lowers the scores
-            'params':
-                {
-                    "classifier__n_estimators": [450, 500, 550],
-                    "classifier__max_depth": [7, 8, 9],
-                    "classifier__learning_rate": [0.005, 0.01, 0.015],
-                    "classifier__subsample": [1],
-                    "classifier__colsample_bytree": [1, 2, 3],
-                    'selector__k': [60, 90, 120],
-                }},
+    # 'XGBClassifier':
+    #     {
+    #         'name': 'XGBClassifier',
+    #         'estimator': XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor'),
+    #         'selector': SelectKBest(),
+    #         'decomposition': PCA(),  # None because PCA() lowers the scores
+    #         'params':
+    #             {
+    #                 "classifier__n_estimators": [450, 500, 550],
+    #                 "classifier__max_depth": [7, 8, 9],
+    #                 "classifier__learning_rate": [0.005, 0.01, 0.015],
+    #                 "classifier__subsample": [1],
+    #                 "classifier__colsample_bytree": [1, 2, 3],
+    #                 'selector__k': [60, 90, 120],
+    #             }},
 
     # 'CatBoostClassifier':
     #     {

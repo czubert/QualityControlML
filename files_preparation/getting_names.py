@@ -11,7 +11,8 @@ file_path = 'file_names'
 # Input paths
 # TODO po skonczeniu pisania kodu zmienic lokalizacje folderow do uczenia
 path = 'data_input/data_example/*/*.txt'  # For data with strange long names starting with S28.234...
-new_data_url = 'data_input/ML/'
+# new_data_url = 'data_input/ML/'
+new_data_url = 'data_input/ML2022/'
 new_ag_url = new_data_url + 'PMBA/*/*.txt'
 new_ag_bg_url = new_data_url + 'bg/*/*.txt'
 

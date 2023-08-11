@@ -2,11 +2,19 @@ import os
 import pandas as pd
 from joblib import dump, load
 
+# constants
+PEAKS = {
+    # beginning of the peak and end of the peak to estimate max and min values
+    'peak1': ['806', '869'],
+    'peak2': ['1156', '1221'],
+    'peak3': ['1535', '1685'],
+}
+
 
 def save_as_joblib(data_to_save, file_name, path):
     if not os.path.isdir(f'{path}'):
         os.makedirs(f'{path}')
-    
+
     dump(data_to_save, f'{path}/{file_name}.joblib')
 
 
@@ -17,7 +25,7 @@ def read_joblib(file_name, dir_name):
 def save_as_csv(data, file_name, dir_name):
     if not os.path.isdir(f'{dir_name}'):
         os.mkdir(f'{dir_name}')
-    
+
     data.to_csv(f'{dir_name}/{file_name}.csv')
 
 

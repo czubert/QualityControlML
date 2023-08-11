@@ -2,8 +2,8 @@ import os
 import pandas as pd
 
 import utils
-from . import enhancement_factor
-from . import rating_utils
+from ML import enhancement_factor
+from ML import rating_utils
 
 # Input path
 dir_path = 'data_output/step_2_group_data'
@@ -75,7 +75,7 @@ def main(grouped_files, raman_pmba, chosen_peak, border_value, margin_of_error, 
 
 
 def rate_spectra(grouped_files, raman_pmba, border_value, margin_of_error, chosen_peak, only_new_spectra,
-                 read_from_file=True):
+                 read_from_file=False):
     if read_from_file:
         if not os.path.isfile(output_dir_path + '//' + output_file_name + '.joblib'):
             return main(grouped_files, raman_pmba, chosen_peak, border_value, margin_of_error, only_new_spectra)
@@ -94,8 +94,8 @@ if __name__ == "__main__":
 
     rated_spectra = main(grouped_files,
                          raman_pmba,
-                         chosen_peak='peak2',
-                         border_value=51000000,
+                         chosen_peak='peak1',
+                         border_value=65*1000000,
                          margin_of_error=0.10,
                          only_new_spectra=True)
 
