@@ -16,6 +16,7 @@ def calculate_ef(i_sers=100000, i_raman=1000):
     concentration = 1 * 10 ** (-6)
     
     # # Volume of solution (ml)
+    # TODO is it ml or ul
     volume = 200.0
     
     # # Calculating the number of molecules
