@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 
 from files_preparation import getting_names, reading_data, grouping_data, data_analysis
-from ML import train_test_split, estimators, rating_spectra
+from ML import rating_spectra #train_test_split, estimators
 
 # read_from_files = True
 read_from_files = False
@@ -12,6 +12,9 @@ now = datetime.now()
 peak = {'name': 'peak1', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
 peak2 = {'name': 'peak2', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
 peak3 = {'name': 'peak3', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
+
+peaks = [peak, peak2, peak3]
+
 
 print(f'Starting time: {now.strftime("%Y_%m_%d %H:%M:%S")}')
 print()
@@ -29,6 +32,8 @@ GETTING FILE NAMES FOR FURTHER USE
 print('Getting filenames...')
 
 file_names = getting_names.get_names(read_from_file=read_from_files)
+
+print(file_names)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -79,14 +84,14 @@ Preparing images for data analysis
 ********************************************************************************
 """
 # TODO probably this part should be removed
-start_time = time.time()
-print('Preparing images for data analysis...')
-
-# data_analysis.run(grouped_files, best_ratio=True, peak=peak['name'])
-data_analysis.run(grouped_files, best_ratio=True, peak='peak1')
-
-print(f'Spectra saved in {round(time.time() - start_time, 2)} seconds')
-print()
+# start_time = time.time()
+# print('Preparing images for data analysis...')
+#
+# # data_analysis.run(grouped_files, best_ratio=True, peak=peak['name'])
+# data_analysis.run(grouped_files, best_ratio=True, peak='peak1')
+#
+# print(f'Spectra saved in {round(time.time() - start_time, 2)} seconds')
+# print()
 
 """
 ********************************************************************************
@@ -104,10 +109,10 @@ print('Rating spectra...')
 rated_spectra = rating_spectra.rate_spectra(
     grouped_files,
     raman_pmba,
-    chosen_peak=peak['name'],  # which peak should be taken (peak1, peak2, peak3)
+    chosen_peak=peaks, #[0]['name'],  #which peak should be taken (peak1, peak2, peak3)
     border_value=peak['border_value'],  # value of the border between good/bad spectra
     margin_of_error=peak['margin_of_error'],  # % of spectra that should increase above border
-    only_new_spectra=True)  # if you want to work on ML spectra only
+    only_new_spectra=False)  # if you want to work on ML spectra only
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
@@ -120,12 +125,12 @@ Train Test Split background data
 ********************************************************************************
 """
 
-start_time = time.time()
-print('Train Test Splitting the data...')
-ml_variables = train_test_split.splitting_data(rated_spectra, read_from_file=False, seed=42)
-
-print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
-print()
+# start_time = time.time()
+# print('Train Test Splitting the data...')
+# ml_variables = train_test_split.splitting_data(rated_spectra, read_from_file=False, seed=42)
+#
+# print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+# print()
 
 """
 ********************************************************************************
@@ -134,15 +139,15 @@ Looking for best estimator
 Checking many estimators, with different parameters
 ********************************************************************************
 """
-start_time = time.time()
-print('Looking for best estimator... be patient...')
-
-scores, models = estimators.get_best_classsifier(**ml_variables)
-
-time_s = round(time.time() - start_time, 2)
-time_min = round(time_s / 60)
-time_h = round(time_min / 60)
-print(f'Models trained in {time_s} seconds')
-print(f'Models trained in {time_min} minutes')
-print(f'Models trained in {time_h} hours')
-print()
+# start_time = time.time()
+# print('Looking for best estimator... be patient...')
+#
+# scores, models = estimators.get_best_classsifier(**ml_variables)
+#
+# time_s = round(time.time() - start_time, 2)
+# time_min = round(time_s / 60)
+# time_h = round(time_min / 60)
+# print(f'Models trained in {time_s} seconds')
+# print(f'Models trained in {time_min} minutes')
+# print(f'Models trained in {time_h} hours')
+# print()

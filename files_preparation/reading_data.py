@@ -19,28 +19,33 @@ def main(file_names):
     Additionally it gives corresponding file name as a feature name.
     :return: dict of list of tuples
     """
+    #TODO change names from .../a1/sp_1 to .../a1/01, sort by name and add meaning ID
     files = {}
     for file_names_types in file_names:
         data = []
+
+        numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+        new_names = ['sp_01', 'sp_02', 'sp_03', 'sp_04', 'sp_05', 'sp_06', 'sp_07', 'sp_08', 'sp_09']
 
         for name in file_names[file_names_types]:
             # Splits path name into two elements in a tuple. One is path and the second is name of a file
 
             if isinstance(name, str):
-                path_split = os.path.split(name)
 
-                # TODO koniecznie poprawić tutaj ten regex, jak nie tu, to przy przypisywaniu "id"
-                prefix = re.search(r'20.{8}', path_split[0]).group(0)
-                main_name = re.search(r'.*', path_split[1]).group(0)[:-4]  # getting filenames and deleting '.txt'
-                # Getting rid of automatically saved spectra of the background
-                if 'sp_0' in main_name:
-                    continue
+                pattern = r'20[11-40]' + r'.*'
+                id = re.findall(pattern, name)[0]
+                id = re.sub('.txt', '', id)
 
-                tmp_file_name = prefix + ' ' + main_name
-            else:
+                for number, new_name in zip(numbers, new_names):
+
+                   if re.search('sp_' + number, id):
+
+                        id = re.sub('sp_' + number + '$', new_name, id)
+                        continue
+
+            if re.search('sp_0$', id):
                 continue
 
-            # adding name of file into metadata DataFrame
             meta_df = read_metadata(name)
             meta_df.loc['file_name'] = name
 
@@ -50,20 +55,9 @@ def main(file_names):
             if data_df is None:
                 continue
 
-            # Distinguish between two types of spectra names
-            if len(main_name) > 10:
-                id_name = main_name.split('_')
-                id_name[1].lstrip('0')
+            data_df.rename(columns={'Dark Subtracted #1': ''}, inplace=True)
 
-                id_name = '_'.join(id_name[0:2])
-                data_df.loc['id'] = id_name
-
-                data_df.rename(columns={DARK: main_name}, inplace=True)
-            else:
-                data_df.loc['id'] = tmp_file_name
-                data_df.rename(columns={DARK: tmp_file_name}, inplace=True)
-
-            # data_df.rename(columns={'Dark Subtracted #1': main_name}, inplace=True)
+            data_df.loc['id'] = id
 
             # creates list of tuples containing 2 elements metadata and data
             data.append((meta_df, data_df))

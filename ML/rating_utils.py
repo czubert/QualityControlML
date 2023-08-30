@@ -39,7 +39,8 @@ def get_sers_intensities(grouped_files, only_new_spectra):
         ag_df = ag_df[~mask]  # Takes only new spectra out of all ag spectra
 
     subtracted_sers_df = pd.DataFrame()  # DataFrame that will consist only of max/min ratio for each peak
-    subtracted_sers_df['id'] = ag_df['id'].str.replace(r'_.*', '')
+    # change it
+    subtracted_sers_df['id'] = ag_df['id']
 
     # TODO czy robić wstępną selekcję na podstawie widma PMBA? Że jak w jakimś punkcie, w którym nie ma peaku
     #  będzie wartość przekraczająca jakiś próg, to dajemy ocene "0"? Przez to nauczymy go też,
@@ -52,9 +53,9 @@ def get_sers_intensities(grouped_files, only_new_spectra):
 
     # TODO, czy sklejanie 2 widm na jednym podłożu ma sens? nie lepiej traktować to jako dwa różne wyniki?
     # Getting the highest ambivalent intensities for each peak (for few spots on one substrate)
-    best_of_sers_subtracted = subtracted_sers_df.groupby('id').max()
+    #best_of_sers_subtracted = subtracted_sers_df.groupby('id').max()
 
-    return best_of_sers_subtracted
+    return subtracted_sers_df
 
 
 def draw_plot(best, subtracted_raman_df):
