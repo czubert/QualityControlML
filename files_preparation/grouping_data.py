@@ -27,7 +27,7 @@ def main(separated_names):
             data_list.append(tmp_data)
         
         grouped_df = pd.concat(data_list, axis=1, sort=False).T
-        # grouped_df.dropna(how="all",axis=1, inplace=True)
+        #grouped_df.dropna(how="all",axis=1, inplace=True)
         
         #TODO sprawdzić czy to ma wpływ na szybkość działania i wyniki, przerzucić do preprocessingu potem
 

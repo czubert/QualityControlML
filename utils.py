@@ -5,9 +5,11 @@ from joblib import dump, load
 # constants
 PEAKS = {
     # beginning of the peak and end of the peak to estimate max and min values
-    'peak1': ['806', '869'],
-    'peak2': ['1156', '1221'],
-    'peak3': ['1535', '1685'],
+    'peak1': ['471', '581'],
+    'peak2': ['1154', '1221'],
+    'peak3': ['1535', '1688'],
+    'peak4': ['1154', '1215'],
+    'peak5': ['1453', '1510'],
 }
 
 

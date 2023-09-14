@@ -12,8 +12,11 @@ now = datetime.now()
 peak = {'name': 'peak1', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
 peak2 = {'name': 'peak2', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
 peak3 = {'name': 'peak3', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
+peak4 = {'name': 'peak4', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
+peak5 = {'name': 'peak5', 'border_value': 55 * 1000000, 'margin_of_error': 0.10}
 
-peaks = [peak, peak2, peak3]
+
+peaks = [peak, peak2, peak3, peak4, peak5]
 
 
 print(f'Starting time: {now.strftime("%Y_%m_%d %H:%M:%S")}')
@@ -33,7 +36,7 @@ print('Getting filenames...')
 
 file_names = getting_names.get_names(read_from_file=read_from_files)
 
-print(file_names)
+#print(file_names)
 
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
