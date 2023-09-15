@@ -19,7 +19,7 @@ class Spectra():
         :param df:
         :return:
         """
-        surface = np.sum(df.iloc[:, 0:-7], axis=1)
+        surface = np.sum(df.iloc[:, 0:-9], axis=1)
 
         return surface
 
@@ -77,12 +77,40 @@ class Spectra():
         return dat
 
     def get_ef(self, df):
-        pass
+
+
+        df['ef'] = df.loc[:, 'peak1': 'peak5'].min(axis=1)
+
+        to_check = df.loc[:, 'peak1': 'peak5'].columns
+
+        df['chosen peak'] = df[to_check].idxmin(axis=1)
+
+        return df
+
 
     # TODO Is this the best way to average it out?
     def average_data(self):
         pass
     # EF, ID, surface, substrate ID
+
+        df = self.get_ef(self.data)
+
+        surface_series, ef_series, id_series = [], [], []
+
+        for id in df['substrate id'].unique():
+            mask = df['substrate id'] == id
+
+            dat = df[mask]
+
+            surface_series.append(dat.sort_values('surface').iloc[2:-2]['surface'].mean())
+            ef_series.append(dat.sort_values('ef').iloc[2:-2]['ef'].mean())
+            id_series.append(id)
+
+        dat = pd.DataFrame({'surface': surface_series, 'ef': ef_series, 'substrate id': id_series})
+
+        dat['ef'] = dat['ef'] / 10 ** 6
+
+        return dat
 
     def get_substrate(self, id):
         # selecting data with good ID
