@@ -32,8 +32,8 @@ def main(grouped_files, raman_pmba, chosen_peak, border_value, margin_of_error, 
     # Getting SERS intensities of PMBA
     best_of_sers_subtracted = rating_utils.get_sers_intensities(grouped_files, only_new_spectra)
 
-    # Creating plots to find the best_of_sers_subtracted parameters to distinguish good from bad spectra
-    rating_utils.draw_plot(best_of_sers_subtracted, subtracted_raman)
+    # # Creating plots to find the best_of_sers_subtracted parameters to distinguish good from bad spectra
+    # rating_utils.draw_plot(best_of_sers_subtracted, subtracted_raman)
 
     best_of_sers_subtracted['ef'] = best_of_sers_subtracted[chosen_peak].apply(
         lambda sers_intensity: enhancement_factor.calculate_ef(sers_intensity, subtracted_raman[chosen_peak]))

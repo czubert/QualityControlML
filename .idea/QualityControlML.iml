@@ -10,7 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/data_output2" />
       <excludeFolder url="file://$MODULE_DIR$/images" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.7 (DataSci) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

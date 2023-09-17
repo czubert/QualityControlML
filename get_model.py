@@ -4,8 +4,8 @@ from datetime import datetime
 from files_preparation import getting_names, reading_data, grouping_data, data_analysis
 from ML import train_test_split, estimators, rating_spectra
 
-# read_from_files = True
-read_from_files = False
+read_from_files = True
+# read_from_files = False
 now = datetime.now()
 
 # PARAMS
@@ -71,22 +71,22 @@ grouped_files = grouping_data.group_data(read_files, read_from_file=read_from_fi
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
 
-"""
-********************************************************************************
-Preparing images for data analysis
---------------------------------------------------------------------------------
-
-********************************************************************************
-"""
-# TODO probably this part should be removed
-start_time = time.time()
-print('Preparing images for data analysis...')
-
-# data_analysis.run(grouped_files, best_ratio=True, peak=peak['name'])
-data_analysis.run(grouped_files, best_ratio=True, peak='peak1')
-
-print(f'Spectra saved in {round(time.time() - start_time, 2)} seconds')
-print()
+# """
+# ********************************************************************************
+# Preparing images for data analysis
+# --------------------------------------------------------------------------------
+#
+# ********************************************************************************
+# """
+# # TODO probably this part should be removed
+# start_time = time.time()
+# print('Preparing images for data analysis...')
+#
+# # data_analysis.run(grouped_files, best_ratio=True, peak=peak['name'])
+# data_analysis.run(grouped_files, best_ratio=True, peak='peak1')
+#
+# print(f'Spectra saved in {round(time.time() - start_time, 2)} seconds')
+# print()
 
 """
 ********************************************************************************
@@ -112,37 +112,37 @@ rated_spectra = rating_spectra.rate_spectra(
 print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
 print()
 
-"""
-********************************************************************************
-Train Test Split
---------------------------------------------------------------------------------
-Train Test Split background data
-********************************************************************************
-"""
-
-start_time = time.time()
-print('Train Test Splitting the data...')
-ml_variables = train_test_split.splitting_data(rated_spectra, read_from_file=False, seed=42)
-
-print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
-print()
-
-"""
-********************************************************************************
-Looking for best estimator
---------------------------------------------------------------------------------
-Checking many estimators, with different parameters
-********************************************************************************
-"""
-start_time = time.time()
-print('Looking for best estimator... be patient...')
-
-scores, models = estimators.get_best_classsifier(**ml_variables)
-
-time_s = round(time.time() - start_time, 2)
-time_min = round(time_s / 60)
-time_h = round(time_min / 60)
-print(f'Models trained in {time_s} seconds')
-print(f'Models trained in {time_min} minutes')
-print(f'Models trained in {time_h} hours')
-print()
+# """
+# ********************************************************************************
+# Train Test Split
+# --------------------------------------------------------------------------------
+# Train Test Split background data
+# ********************************************************************************
+# """
+#
+# start_time = time.time()
+# print('Train Test Splitting the data...')
+# ml_variables = train_test_split.splitting_data(rated_spectra, read_from_file=False, seed=42)
+#
+# print(f'Data loaded in {round(time.time() - start_time, 2)} seconds')
+# print()
+#
+# """
+# ********************************************************************************
+# Looking for best estimator
+# --------------------------------------------------------------------------------
+# Checking many estimators, with different parameters
+# ********************************************************************************
+# """
+# start_time = time.time()
+# print('Looking for best estimator... be patient...')
+#
+# scores, models = estimators.get_best_classsifier(**ml_variables)
+#
+# time_s = round(time.time() - start_time, 2)
+# time_min = round(time_s / 60)
+# time_h = round(time_min / 60)
+# print(f'Models trained in {time_s} seconds')
+# print(f'Models trained in {time_min} minutes')
+# print(f'Models trained in {time_h} hours')
+# print()
