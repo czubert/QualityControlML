@@ -9,11 +9,15 @@ class Spectra:
 
     def __init__(self, path):
         self.path = path
+        # TODO może read_background_spec, read_bg_spectra? bo "data" jest trochę ogólne, a to dotyczy chyba tylko teł?
         self.data = self.read_data()
-        self.pmba_spec = self.get_pmba_spec()
+        self.pmba_spec = self.get_pmba_spec()  # TODO może load_pmba_spec, albo load_pmba?
         self.averaged_data = self.average_data()
 
-    def get_surface(self, df):
+    # TODO
+    #  jeżeli nie używasz obiektu w metodzie (self), to taka metoda powinna być statyczna. na poniższej metodzie pokażę:
+    @staticmethod
+    def get_surface(df):
         """
 
         :param df:
@@ -23,6 +27,7 @@ class Spectra:
 
         return surface
 
+    # TODO static
     def move_columns(self, df):
         col = list(df.columns)
 
@@ -76,9 +81,8 @@ class Spectra:
 
         return dat
 
+    # TODO static
     def get_ef(self, df):
-
-
         df['ef'] = df.loc[:, 'peak1': 'peak5'].min(axis=1)
 
         to_check = df.loc[:, 'peak1': 'peak5'].columns
@@ -87,11 +91,10 @@ class Spectra:
 
         return df
 
-
     # TODO Is this the best way to average it out?
     def average_data(self):
-        pass
-    # EF, ID, surface, substrate ID
+        pass  # TODO tego już nie powinno tutaj być
+        # EF, ID, surface, substrate ID
 
         df = self.get_ef(self.data)
 
@@ -112,6 +115,9 @@ class Spectra:
 
         return dat
 
+    # TODO
+    #  prawie wszedzię masz, że parametr zakrywa taki sam spoza funkcji, niestety trzebaby inaczej nazwać,
+    #  też mnie to wkurza xD
     def get_substrate(self, id):
         # selecting data with good ID
         mask = self.data['substrate id'] == id
@@ -138,9 +144,12 @@ class Spectra:
             plt.plot(df.columns[0: -3], df.iloc[i, 0: -3])
 
     def plot(self, id):
-
         fig = plt.figure(figsize=(10, 4))
         gs = fig.add_gridspec(1, 2)
+
+        # TODO
+        #  poniższe zmienne raczej nie są konieczne, bo operujesz na obiekcie fig i gs, a potem wywwolujesz funkcje,
+        #  ktore nic nie zwracają wiec pod te zmienne nci sie nie przypisuje
 
         ax1 = fig.add_subplot(gs[0, 0])
         ax1 = self.plot_background(id)
@@ -148,6 +157,8 @@ class Spectra:
         ax2 = fig.add_subplot(gs[0, 1])
         ax2 = self.plot_pmba(id)
         plt.tight_layout()
+
+    # TODO static
     def get_correlation(self, x, y):
         x_avg, y_avg = np.sum(x), np.sum(y)
 
