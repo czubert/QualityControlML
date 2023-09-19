@@ -5,7 +5,7 @@ import pickle
 import joblib
 
 
-class Spectra():
+class Spectra:
 
     def __init__(self, path):
         self.path = path
@@ -120,6 +120,34 @@ class Spectra():
 
         return df
 
+    def plot_background(self, id):
+        df = self.data[self.data['substrate id'] == id]
+
+        text = 'EF: ' + str(round(df['ef'].max() / self.data['ef'].max(), 3))
+
+        for i in range(11):
+            plt.plot(df.columns[0: -12], df.iloc[i, 0: -12])
+
+        plt.text(1500, 45000, text)
+
+    def plot_pmba(self, id):
+        id = self.data[self.data['substrate id'] == id]['id']
+        df = self.pmba_spec[self.pmba_spec['id'].isin(id)]
+
+        for i in range(11):
+            plt.plot(df.columns[0: -3], df.iloc[i, 0: -3])
+
+    def plot(self, id):
+
+        fig = plt.figure(figsize=(10, 4))
+        gs = fig.add_gridspec(1, 2)
+
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax1 = self.plot_background(id)
+
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax2 = self.plot_pmba(id)
+        plt.tight_layout()
     def get_correlation(self, x, y):
         x_avg, y_avg = np.sum(x), np.sum(y)
 
