@@ -4,18 +4,18 @@ import matplotlib.pyplot as plt
 import pickle
 import joblib
 
+import utils
+
 
 class Spectra:
 
-    def __init__(self, path):
+    def __init__(self, path, baseline_df=False):
         self.path = path
-        # TODO może read_background_spec, read_bg_spectra? bo "data" jest trochę ogólne, a to dotyczy chyba tylko teł?
-        self.data = self.read_data()
-        self.pmba_spec = self.get_pmba_spec()  # TODO może load_pmba_spec, albo load_pmba?
+        self.bg_data = self.read_bg_spectra()
+        self.pmba_data = self.load_pmba()
         self.averaged_data = self.average_data()
+        self.baseline_coeff = self.get_baseline(baseline_df)
 
-    # TODO
-    #  jeżeli nie używasz obiektu w metodzie (self), to taka metoda powinna być statyczna. na poniższej metodzie pokażę:
     @staticmethod
     def get_surface(df):
         """
@@ -27,8 +27,8 @@ class Spectra:
 
         return surface
 
-    # TODO static
-    def move_columns(self, df):
+    @staticmethod
+    def move_columns(df):
         col = list(df.columns)
 
         moved_columns = ['id', 'laser_power', 'integration_time']
@@ -41,10 +41,10 @@ class Spectra:
 
         return df
 
-    def get_pmba_spec(self):
-        path = './QualityControlML/data_output/step_2_group_data/grouped_data.joblib'
+    def load_pmba(self):
+        pmba_path = './data_output/step_2_group_data/grouped_data.joblib'
 
-        dictionairy = joblib.load(path)
+        dictionairy = joblib.load(pmba_path)
 
         df = dictionairy['ag']
 
@@ -56,7 +56,7 @@ class Spectra:
 
         return df
 
-    def read_data(self):
+    def read_bg_spectra(self):
         # reading DF from file
         with open(self.path, 'rb') as file:
             df = pickle.load(file)
@@ -81,8 +81,8 @@ class Spectra:
 
         return dat
 
-    # TODO static
-    def get_ef(self, df):
+    @staticmethod
+    def get_ef(df):
         df['ef'] = df.loc[:, 'peak1': 'peak5'].min(axis=1)
 
         to_check = df.loc[:, 'peak1': 'peak5'].columns
@@ -93,15 +93,13 @@ class Spectra:
 
     # TODO Is this the best way to average it out?
     def average_data(self):
-        pass  # TODO tego już nie powinno tutaj być
-        # EF, ID, surface, substrate ID
 
-        df = self.get_ef(self.data)
+        df = self.get_ef(self.bg_data)  # EF, ID, surface, substrate ID
 
         surface_series, ef_series, id_series = [], [], []
 
-        for id in df['substrate id'].unique():
-            mask = df['substrate id'] == id
+        for substrate_id in df['substrate id'].unique():
+            mask = df['substrate id'] == substrate_id
 
             dat = df[mask]
 
@@ -115,51 +113,65 @@ class Spectra:
 
         return dat
 
-    # TODO
-    #  prawie wszedzię masz, że parametr zakrywa taki sam spoza funkcji, niestety trzebaby inaczej nazwać,
-    #  też mnie to wkurza xD
-    def get_substrate(self, id):
-        # selecting data with good ID
-        mask = self.data['substrate id'] == id
+    def get_baseline(self, baseline_df):
 
-        df = self.data[mask]
+        if baseline_df:
+            coeff_list = []
+
+            for i in range(self.bg_data.shape[0]):
+                array = np.array(self.bg_data.iloc[i, :-12].dropna(), dtype=np.float64)
+                coefficients = utils.baseline(array, deg=5)
+                coeff_list.append(coefficients)
+
+            coeff_arr = np.vstack(coeff_list)
+            df = pd.DataFrame(coeff_arr, columns=['c1', 'c2', 'c3', 'c4', 'c5', 'c6'])
+            baseline_df = pd.concat([self.bg_data['id'], self.bg_data['ef'], df], axis=1)
+
+        return baseline_df
+
+    # methods usefull while working in jupyter notebook:
+    def get_substrate(self, substrate_id):
+        # selecting data with good ID
+        mask = self.bg_data['substrate id'] == substrate_id
+
+        df = self.bg_data[mask]
 
         return df
 
-    def plot_background(self, id):
-        df = self.data[self.data['substrate id'] == id]
+    def plot_background(self, substrate_id):
+        df = self.bg_data[self.bg_data['substrate id'] == substrate_id]
 
-        text = 'EF: ' + str(round(df['ef'].max() / self.data['ef'].max(), 3))
+        text = 'EF: ' + str(round(df['ef'].max() / self.bg_data['ef'].max(), 3))
 
         for i in range(11):
             plt.plot(df.columns[0: -12], df.iloc[i, 0: -12])
 
         plt.text(1500, 45000, text)
 
-    def plot_pmba(self, id):
-        id = self.data[self.data['substrate id'] == id]['id']
-        df = self.pmba_spec[self.pmba_spec['id'].isin(id)]
+    def plot_pmba(self, substrate_id):
+
+        correct = self.bg_data[self.bg_data['substrate id'] == substrate_id]['id']
+        df = self.pmba_data[self.pmba_data['id'].isin(correct)]
 
         for i in range(11):
             plt.plot(df.columns[0: -3], df.iloc[i, 0: -3])
 
-    def plot(self, id):
+    def plot(self, substrate_id):
         fig = plt.figure(figsize=(10, 4))
         gs = fig.add_gridspec(1, 2)
 
-        # TODO
-        #  poniższe zmienne raczej nie są konieczne, bo operujesz na obiekcie fig i gs, a potem wywwolujesz funkcje,
-        #  ktore nic nie zwracają wiec pod te zmienne nci sie nie przypisuje
+        fig.add_subplot(gs[0, 0])
+        self.plot_background(substrate_id)
+        plt.title('Background Raman spectra')
 
-        ax1 = fig.add_subplot(gs[0, 0])
-        ax1 = self.plot_background(id)
+        fig.add_subplot(gs[0, 1])
+        self.plot_pmba(substrate_id)
+        plt.title('pmba Raman spectra')
 
-        ax2 = fig.add_subplot(gs[0, 1])
-        ax2 = self.plot_pmba(id)
         plt.tight_layout()
 
-    # TODO static
-    def get_correlation(self, x, y):
+    @staticmethod
+    def get_correlation(x, y):
         x_avg, y_avg = np.sum(x), np.sum(y)
 
         x_dim, y_dim = np.meshgrid(x, y, indexing='ij')
@@ -168,24 +180,18 @@ class Spectra:
 
         amplitude = np.sqrt(np.sum((x_dim - x_avg)) ** 2 * np.sum((y_dim - y_avg) ** 2))
 
-        plt.imshow(product / amplitude, cmap='gray')
-        plt.colorbar()
+        # plt.imshow(product / amplitude, cmap='gray')
+        # plt.colorbar()
 
-        # return np.sum(product) / amplitude
+        return np.sum(product) / amplitude
 
 
 if __name__ == '__main__':
-    path = './DataFrame/df.pkl'
+    df_path = './DataFrame/df.pkl'
 
-    spec = Spectra(path)
+    spec = Spectra(df_path, True)
 
-    # plt.plot(spec.data['surface'], spec.data['peak2'], '.')
+    df = spec.baseline_coeff
 
-    plt.hist(spec.data['peak1'], bins=40)
+    plt.plot(df['c1'], df['ef'], '.')
 
-    # x = np.random.randint(10, size = 500)
-
-    # corr = spec.get_correlation(spec.data['peak3'], spec.data['surface'])
-
-    # spec.get_correlation(spec.data['peak3'], spec.data['surface'])
-    print('finished')
