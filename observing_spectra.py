@@ -15,6 +15,7 @@ class Spectra:
         self.pmba_data = self.load_pmba()
         self.averaged_data = self.average_data()
         self.baseline_coeff = self.get_baseline(baseline_df)
+        #self.peaks = self.peak_analysis()
 
     @staticmethod
     def get_surface(df):
@@ -28,8 +29,8 @@ class Spectra:
         return surface
 
     @staticmethod
-    def move_columns(df):
-        col = list(df.columns)
+    def move_columns(daf):
+        col = list(daf.columns)
 
         moved_columns = ['id', 'laser_power', 'integration_time']
 
@@ -37,9 +38,9 @@ class Spectra:
 
         col = col + moved_columns
 
-        df = df[col]
+        dat = daf[col]
 
-        return df
+        return dat
 
     def load_pmba(self):
         pmba_path = './data_output/step_2_group_data/grouped_data.joblib'
@@ -105,7 +106,7 @@ class Spectra:
 
             surface_series.append(dat.sort_values('surface').iloc[2:-2]['surface'].mean())
             ef_series.append(dat.sort_values('ef').iloc[2:-2]['ef'].mean())
-            id_series.append(id)
+            id_series.append(substrate_id)
 
         dat = pd.DataFrame({'surface': surface_series, 'ef': ef_series, 'substrate id': id_series})
 
@@ -120,7 +121,7 @@ class Spectra:
 
             for i in range(self.bg_data.shape[0]):
                 array = np.array(self.bg_data.iloc[i, :-12].dropna(), dtype=np.float64)
-                coefficients = utils.baseline(array, deg=5)
+                _, coefficients = utils.baseline(array, deg=5)
                 coeff_list.append(coefficients)
 
             coeff_arr = np.vstack(coeff_list)
@@ -137,13 +138,27 @@ class Spectra:
         df = self.bg_data[mask]
 
         return df
+    # def peak_analysis(self):
+    #
+    #     df['id'], df['ef'] = self.bg_data['substrate id'], self.bg_data['ef']
+
 
     def plot_background(self, substrate_id):
+        """
+
+        Parameters
+        ----------
+        substrate_id
+
+        Returns
+        -------
+
+        """
         df = self.bg_data[self.bg_data['substrate id'] == substrate_id]
 
         text = 'EF: ' + str(round(df['ef'].max() / self.bg_data['ef'].max(), 3))
 
-        for i in range(11):
+        for i in range(df.shape[0]):
             plt.plot(df.columns[0: -12], df.iloc[i, 0: -12])
 
         plt.text(1500, 45000, text)
@@ -153,20 +168,34 @@ class Spectra:
         correct = self.bg_data[self.bg_data['substrate id'] == substrate_id]['id']
         df = self.pmba_data[self.pmba_data['id'].isin(correct)]
 
-        for i in range(11):
+        for i in range(df.shape[0]):
             plt.plot(df.columns[0: -3], df.iloc[i, 0: -3])
 
     def plot(self, substrate_id):
         fig = plt.figure(figsize=(10, 4))
         gs = fig.add_gridspec(1, 2)
 
+        plt.rcParams["axes.linewidth"] = 2
+        plt.rcParams['xtick.major.width'] = 2
+        plt.rcParams['ytick.major.width'] = 2
         fig.add_subplot(gs[0, 0])
+
         self.plot_background(substrate_id)
-        plt.title('Background Raman spectra')
+        plt.ylabel('intensity', fontweight='bold', fontname="Calibri", fontsize=12)
+        plt.xlabel('raman shift [nm]', fontweight='bold', fontname="Calibri", fontsize=12)
+        plt.xticks(fontsize=8, fontweight='bold')
+        plt.yticks(fontsize=8, fontweight='bold')
+
+        plt.title('Background Raman spectra', fontsize=13, fontweight='bold')
 
         fig.add_subplot(gs[0, 1])
         self.plot_pmba(substrate_id)
-        plt.title('pmba Raman spectra')
+        plt.ylabel('intensity', fontweight='bold', fontname="Calibri", fontsize=12)
+        plt.xlabel('raman shift [nm]', fontweight='bold', fontname="Calibri", fontsize=12)
+        plt.xticks(fontsize=8, fontweight='bold')
+        plt.yticks(fontsize=8, fontweight='bold')
+
+        plt.title('pmba Raman spectra', fontsize=13, fontweight='bold')
 
         plt.tight_layout()
 
@@ -178,20 +207,36 @@ class Spectra:
 
         product = (x_dim - x_avg) * (y_dim - y_avg)
 
-        amplitude = np.sqrt(np.sum((x_dim - x_avg)) ** 2 * np.sum((y_dim - y_avg) ** 2))
+        # amplitude = np.sqrt(np.sum((x_dim - x_avg)) ** 2 * np.sum((y_dim - y_avg) ** 2))
 
-        # plt.imshow(product / amplitude, cmap='gray')
-        # plt.colorbar()
+        plt.imshow(product, cmap='gray')
+        plt.colorbar()
 
-        return np.sum(product) / amplitude
+        # return np.sum(product) / amplitude
 
 
 if __name__ == '__main__':
     df_path = './DataFrame/df.pkl'
 
-    spec = Spectra(df_path, True)
+    spec = Spectra(df_path, baseline_df=True)
 
     df = spec.baseline_coeff
 
-    plt.plot(df['c1'], df['ef'], '.')
-
+    # df = spec.pmba_data.iloc[100, 0:-15].dropna()
+    #
+    # base, _ = utils.baseline(df, deg=5)
+    #
+    # df = df - base
+    #
+    # #plt.plot(df.index, base)
+    #
+    # plt.plot(df)
+    #
+    # #plt.plot(df-base)
+    #
+    # peaks = utils.indexes(np.array(df, dtype=np.float64), thres=0.5, min_dist=10)
+    #
+    # peaks_position = []
+    #
+    # for i in range(peaks.size):
+    #     peaks_position.append(df.index[peaks[i]])
