@@ -67,18 +67,17 @@ class Preprocessing:
         return ef
 
     def analyze_peaks_baseline(self):
-        coeff_list, base_line_list, peaks_list = [], [], []
+        coeff_list, peaks_list = [], []
 
         for i in range(self.raw_data.shape[0]):
             dat = self.raw_data.iloc[i, 0:self.spectra_end].sort_index().dropna()
 
             array = np.array(dat, dtype=np.float64)
             base_line, coefficients = utils.baseline(array, deg=7)
-            peaks_name = utils.indexes(array - base_line, thres=0.4, min_dist=100)
+            peaks = utils.indexes(array - base_line, thres=0.4, min_dist=100)
 
             coeff_list.append(np.array(coefficients))
-            base_line_list.append(np.array(base_line))
-            peaks_list.append(np.array(dat.index[peaks_name]))
+            peaks_list.append(np.array(len(peaks)))
 
         coefficients = ['a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7']
 
@@ -86,24 +85,9 @@ class Preprocessing:
 
         coeff_df = pd.DataFrame(coeff_arr, columns=coefficients)
 
-        peaks_list = np.array(peaks_list)
+        peaks_df = pd.DataFrame({'peaks number': peaks_list})
 
-        max_length = max(len(arr) for arr in peaks_list)
-
-        padded_data = np.array(
-            [np.pad(arr, (0, max_length - len(arr)), constant_values=np.nan) for arr in peaks_list])
-
-        peaks_data = np.array(padded_data)
-
-        peaks_name = list(np.arange(peaks_data.shape[1]))
-
-        peaks_name = ['p' + str(item) for item in peaks_name]
-
-        peaks_df = pd.DataFrame(peaks_data, columns=peaks_name)
-
-        baseline_df = pd.DataFrame({'base line': base_line_list})
-
-        df = pd.concat((baseline_df, coeff_df, peaks_df), axis=1)
+        df = pd.concat((coeff_df, peaks_df), axis=1)
 
         return df
 
@@ -119,11 +103,9 @@ class Preprocessing:
 
         data['ln(ef)'] = self.get_ef()
 
-        spectra = self.raw_data.iloc[:, 0:self.spectra_end]
+        peaks_coeff_df = self.analyze_peaks_baseline()
 
-        peaks_baseline_df = self.analyze_peaks_baseline()
-
-        data = pd.concat((spectra, data, peaks_baseline_df), axis=1)
+        data = pd.concat((data, peaks_coeff_df), axis=1)
 
         return data
 
@@ -133,5 +115,5 @@ if __name__ == '__main__':
 
     data = Preprocessing(df_path)
 
-    with open('../DataFrame/df_processed_data_extendent.pkl', 'wb+') as data_frame:
+    with open('../DataFrame/df_processed_data.pkl', 'wb+') as data_frame:
         pickle.dump(data.processed_data, data_frame)
