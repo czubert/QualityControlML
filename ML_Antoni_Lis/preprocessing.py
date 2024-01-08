@@ -4,9 +4,6 @@ import pickle
 import utils
 
 
-# import matplotlib.pyplot as plt
-# import joblib
-
 
 class Preprocessing:
 
@@ -91,26 +88,36 @@ class Preprocessing:
 
         return df
 
-    def clean_data(self):
-        pass
+    def normalize_data(self, df, columns):
+
+            for column in columns:
+
+                df[column] = (df[column] - df[column].min())/(df[column].max() - df[column].min())
+
+            return df
 
     def analyze_data(self):
         data = pd.DataFrame()
 
         data['id'], data['substrate number'] = self.raw_data['id'], self.raw_data['substrate id']
 
-        data['surface'] = self.get_surface()
-
         data['ln(ef)'] = self.get_ef()
+
+        data['surface'] = self.get_surface()
 
         peaks_coeff_df = self.analyze_peaks_baseline()
 
         data = pd.concat((data, peaks_coeff_df), axis=1)
 
+        columns_to_normalize = ['ln(ef)', 'surface', 'a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'peaks number']
+
+        data = self.normalize_data(data, columns_to_normalize)
+
         return data
 
 
 if __name__ == '__main__':
+
     df_path = '../DataFrame/df.pkl'
 
     data = Preprocessing(df_path)
