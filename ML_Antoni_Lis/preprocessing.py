@@ -1,10 +1,10 @@
 import pandas as pd
+from scipy import signal
 import numpy as np
 import pickle
 import utils
 
-
-
+#TODO 
 class Preprocessing:
 
     def __init__(self, path):
@@ -63,38 +63,69 @@ class Preprocessing:
 
         return ef
 
-    def analyze_peaks_baseline(self):
-        coeff_list, peaks_list = [], []
+    @staticmethod
+    def get_peaks_baseline(x, y):
+        base, coeff = utils.baseline(y, deg=7)
+
+        amplitude = y - base
+        # finding indices of many peaks, due to low height argument
+        peaks_position = signal.find_peaks(amplitude, height=100, distance=80)[0]
+        #amplitude of those peaks
+        peaks_amplitude = amplitude[peaks_position]
+
+        # choosing indices of 5 highest amplitudes
+        highest_peak_indices = np.argsort(peaks_amplitude)[::-1][0:5]
+
+        #getting indices of the chosen peaks and sorting them
+        chosen_peaks_position = np.sort(peaks_position[highest_peak_indices])
+
+        peaks_height = y[np.array(chosen_peaks_position, dtype=np.int32)]
+
+        width = signal.peak_widths(amplitude, chosen_peaks_position)
+
+        return coeff, x[peaks_position], peaks_height, width[0]
+
+    @staticmethod
+    def fill_dictioanairy(dic, list):
+        for key, value in zip(dic.keys(), list):
+            dic[key].append(value)
+
+    def get_peaks_baseline_df(self):
+
+        baseline_dic = {'a1': [], 'a2': [], 'a3': [], 'a4': [], 'a5': [], 'a6': [], 'a7': [], }
+
+        pos_dic = {'p1': [], 'p2': [], 'p3': [], 'p4': [], 'p5': []}
+
+        height_dic = {'h1': [], 'h2': [], 'h3': [], 'h4': [], 'h5': []}
+
+        width_dic = {'w1': [], 'w2': [], 'w3': [], 'w4': [], 'w5': []}
 
         for i in range(self.raw_data.shape[0]):
-            dat = self.raw_data.iloc[i, 0:self.spectra_end].sort_index().dropna()
 
-            array = np.array(dat, dtype=np.float64)
-            base_line, coefficients = utils.baseline(array, deg=7)
-            peaks = utils.indexes(array - base_line, thres=0.4, min_dist=100)
+            series = self.raw_data.iloc[i, 0:self.spectra_end].sort_index().dropna()
+            intensity = series.values
 
-            coeff_list.append(np.array(coefficients))
-            peaks_list.append(np.array(len(peaks)))
+            raman_shift = series.index.to_numpy(dtype=np.int64)
 
-        coefficients = ['a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7']
+            coeff, peaks_position, peaks_height, width = self.get_peaks_baseline(raman_shift, intensity)
 
-        coeff_arr = np.vstack(coeff_list)
+            self.fill_dictioanairy(baseline_dic, coeff)
+            self.fill_dictioanairy(pos_dic, peaks_position)
+            self.fill_dictioanairy(height_dic, peaks_height)
+            self.fill_dictioanairy(width_dic, width)
 
-        coeff_df = pd.DataFrame(coeff_arr, columns=coefficients)
+        combined_dic = {**baseline_dic, **pos_dic, **height_dic, **width_dic}
 
-        peaks_df = pd.DataFrame({'peaks number': peaks_list})
-
-        df = pd.concat((coeff_df, peaks_df), axis=1)
+        df = pd.DataFrame(combined_dic)
 
         return df
 
     def normalize_data(self, df, columns):
 
-            for column in columns:
+        for column in columns:
+            df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
 
-                df[column] = (df[column] - df[column].min())/(df[column].max() - df[column].min())
-
-            return df
+        return df
 
     def analyze_data(self):
         data = pd.DataFrame()
@@ -105,19 +136,18 @@ class Preprocessing:
 
         data['surface'] = self.get_surface()
 
-        peaks_coeff_df = self.analyze_peaks_baseline()
+        peaks_coeff_df = self.get_peaks_baseline_df()
 
         data = pd.concat((data, peaks_coeff_df), axis=1)
 
-        columns_to_normalize = ['ln(ef)', 'surface', 'a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'peaks number']
+        # columns_to_normalize = ['surface', 'a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7']
 
-        data = self.normalize_data(data, columns_to_normalize)
+        # data = self.normalize_data(data, columns_to_normalize)
 
         return data
 
 
 if __name__ == '__main__':
-
     df_path = '../DataFrame/df.pkl'
 
     data = Preprocessing(df_path)

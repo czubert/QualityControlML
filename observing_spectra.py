@@ -218,9 +218,8 @@ class Spectra:
 if __name__ == '__main__':
     df_path = './DataFrame/df.pkl'
 
-    spec = Spectra(df_path, baseline_df=True)
+    spec = Spectra(df_path, baseline_df=False)
 
-    df = spec.baseline_coeff
 
     # df = spec.pmba_data.iloc[100, 0:-15].dropna()
     #
