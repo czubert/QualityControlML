@@ -24,17 +24,17 @@ test_set = data[~data['substrate number'].isin(training_indices)]
 
 # ML script
 
-X_training = training_set.loc[:, 'surface':'w5']
+X_training = training_set.loc[:, 'surface':'w10']
 y_training = training_set.loc[:, ['ln(ef)']]
 
-X_test = test_set.loc[:, 'surface':'w5']
+X_test = test_set.loc[:, 'surface':'w10']
 y_test = test_set.loc[:, ['ln(ef)']]
 
 #regr = linear_model.LinearRegression()
 
 #regr = RandomForestRegressor()
 
-#regr = svm.SVR()
+#regr = svm.SVR() # here kernel matters
 
 regr = ensemble.GradientBoostingRegressor()
 

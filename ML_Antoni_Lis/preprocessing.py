@@ -4,7 +4,8 @@ import numpy as np
 import pickle
 import utils
 
-#TODO 
+
+# TODO
 class Preprocessing:
 
     def __init__(self, path):
@@ -66,24 +67,21 @@ class Preprocessing:
     @staticmethod
     def get_peaks_baseline(x, y):
         base, coeff = utils.baseline(y, deg=7)
-
+        
         amplitude = y - base
         # finding indices of many peaks, due to low height argument
-        peaks_position = signal.find_peaks(amplitude, height=100, distance=80)[0]
-        #amplitude of those peaks
-        peaks_amplitude = amplitude[peaks_position]
+        peaks_position = signal.find_peaks(amplitude, height=10, distance=80)[0]
 
-        # choosing indices of 5 highest amplitudes
-        highest_peak_indices = np.argsort(peaks_amplitude)[::-1][0:5]
+        peaks = x[np.array(peaks_position, dtype=np.int32)]
+        width = signal.peak_widths(amplitude, peaks_position)[0]
+        peaks_height = amplitude[peaks_position]
 
-        #getting indices of the chosen peaks and sorting them
-        chosen_peaks_position = np.sort(peaks_position[highest_peak_indices])
+        dic = {}
 
-        peaks_height = y[np.array(chosen_peaks_position, dtype=np.int32)]
+        for item in range(len(peaks)):
+            dic[peaks[item]] = (width[item], peaks_height[item])
 
-        width = signal.peak_widths(amplitude, chosen_peaks_position)
-
-        return coeff, x[peaks_position], peaks_height, width[0]
+        return dic
 
     @staticmethod
     def fill_dictioanairy(dic, list):
@@ -92,31 +90,20 @@ class Preprocessing:
 
     def get_peaks_baseline_df(self):
 
-        baseline_dic = {'a1': [], 'a2': [], 'a3': [], 'a4': [], 'a5': [], 'a6': [], 'a7': [], }
-
-        pos_dic = {'p1': [], 'p2': [], 'p3': [], 'p4': [], 'p5': []}
-
-        height_dic = {'h1': [], 'h2': [], 'h3': [], 'h4': [], 'h5': []}
-
-        width_dic = {'w1': [], 'w2': [], 'w3': [], 'w4': [], 'w5': []}
+        dic_list = []
 
         for i in range(self.raw_data.shape[0]):
-
             series = self.raw_data.iloc[i, 0:self.spectra_end].sort_index().dropna()
             intensity = series.values
 
             raman_shift = series.index.to_numpy(dtype=np.int64)
 
-            coeff, peaks_position, peaks_height, width = self.get_peaks_baseline(raman_shift, intensity)
+            peaks_dictionairy = self.get_peaks_baseline(raman_shift, intensity)
 
-            self.fill_dictioanairy(baseline_dic, coeff)
-            self.fill_dictioanairy(pos_dic, peaks_position)
-            self.fill_dictioanairy(height_dic, peaks_height)
-            self.fill_dictioanairy(width_dic, width)
+            dic_list.append(peaks_dictionairy)
 
-        combined_dic = {**baseline_dic, **pos_dic, **height_dic, **width_dic}
 
-        df = pd.DataFrame(combined_dic)
+        df = pd.DataFrame({'peaks dic': dic_list})
 
         return df
 
@@ -152,5 +139,5 @@ if __name__ == '__main__':
 
     data = Preprocessing(df_path)
 
-    with open('../DataFrame/df_processed_data.pkl', 'wb+') as data_frame:
+    with open('../DataFrame/df_peaks_dic.pkl', 'wb+') as data_frame:
         pickle.dump(data.processed_data, data_frame)
